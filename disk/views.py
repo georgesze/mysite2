@@ -22,6 +22,7 @@ def register(request):
     if request.method == "POST":
         uf = UserForm(request.POST,request.FILES)
         if uf.is_valid():
+		
 			# get form information
 			username = uf.cleaned_data['username']
 			headImg = uf.cleaned_data['headImg']
