@@ -23,12 +23,12 @@ def register(request):
         uf = UserForm(request.POST,request.FILES)
         if uf.is_valid():
 		
-			# get form information
-			username = uf.cleaned_data['username']
-			headImg = uf.cleaned_data['headImg']
+            # get form information
+            username = uf.cleaned_data['username']
+            headImg = uf.cleaned_data['headImg']
 			# write to database
-			user = User()
-			user.username = username
+            user = User()
+            user.username = username
             user.headImg = headImg
             user.save()
             return HttpResponse('upload ok!')
