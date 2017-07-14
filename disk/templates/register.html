@@ -8,8 +8,10 @@
 <body>
 <h1>register</h1>
 <form method="post" enctype="multipart/form-data" >
-{{uf.as_p}}
-<input type="submit" value="ok"/>
+	{% csrf_token %}
+
+	{{uf.as_p}}
+	<input type="submit" value="ok"/>
 </form>
 </body>	
 </html>
