@@ -18,8 +18,8 @@ import time
 import random
 
 class UserForm(forms.Form):
-    username = forms.CharField()
-    headImg = forms.FileField()
+    filename = forms.CharField(max_length=50)
+    file = forms.FileField()
 
 def upld(request):
     if request.method == "POST":
@@ -27,11 +27,11 @@ def upld(request):
         if uf.is_valid():
 		
             # get form information
-            username = uf.cleaned_data['username']
-            headImg = uf.cleaned_data['headImg']
+            #filename = uf.cleaned_data['filename']
+            #headImg = uf.cleaned_data['headImg']
 			# write to database
             time1 = time.time()
-            f = open(headImg)
+            f = open(request.FILES['file'])
             #print u"读取文件结束,开始导入!"
             time2 = time.time()
             WorkList = []
