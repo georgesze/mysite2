@@ -10,7 +10,9 @@
 
 #from arrears.models import D072Qf 
 from disk.models import Alimama
-from django import time,random
+#from django import time,random
+import time
+import random
 
 class UserForm(forms.Form):
     username = forms.CharField()
