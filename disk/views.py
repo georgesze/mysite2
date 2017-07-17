@@ -34,4 +34,5 @@ def register(request):
             return HttpResponse('upload ok!')
     else:
         uf = UserForm()
-    return render_to_response('register.html',{'uf':uf})
+    #return render_to_response('register.html',{'uf':uf})
+    return render(request, 'register.html', {'uf':uf})
