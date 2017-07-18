@@ -13,6 +13,7 @@ from disk.models import Alimama
 from django.shortcuts import render,render_to_response
 from django import forms
 from django.http import HttpResponse
+from django.core.files import File
 
 import time
 import random
