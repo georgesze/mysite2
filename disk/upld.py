@@ -30,10 +30,10 @@ def upld(request):
             # get form information
             #filename = uf.cleaned_data['filename']
             #headImg = uf.cleaned_data['headImg']
-			# write to database
+		    # write to database
             time1 = time.time()
-			myfile = request.FILES['file']
-			# 打开文件
+		    myfile = request.FILES['file']
+		    # 打开文件
             f = open(myfile)
             #print u"读取文件结束,开始导入!"
             time2 = time.time()
