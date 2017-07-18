@@ -1,6 +1,6 @@
 #coding:utf-8 
 
-# import os 
+import os 
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "www.settings") 
 
 #import django
@@ -31,7 +31,7 @@ def upld(request):
 		    # write to database
             #handle_uploaded_file(request.FILES['file'])         			
             # 打开文件
-            f = open(request.FILES['test'])
+            f = open(request.FILES['file'])
             #print u"读取文件结束,开始导入!"
             time1 = time.time()
             time2 = time.time()
