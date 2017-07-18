@@ -31,7 +31,7 @@ def upld(request):
 		    # write to database
             #handle_uploaded_file(request.FILES['file'])         			
             # 打开文件
-            f = open(request.FILES['file'])
+            f = open(request.FILES['test'])
             #print u"读取文件结束,开始导入!"
             time1 = time.time()
             time2 = time.time()
