@@ -23,15 +23,15 @@ class UserForm(forms.Form):
     title = forms.CharField(max_length=50)
     file = forms.FileField()
 
-def upld(request):
+def upld(request): 
     if request.method == "POST":
         uf = UserForm(request.POST,request.FILES)
         if uf.is_valid():
 
 		    # write to database
-            handle_uploaded_file(request.FILES['file'])         			
+            #handle_uploaded_file(request.FILES['file'])         			
             # 打开文件
-            #f = open(myfile)
+            f = open(request.FILES['file'])
             #print u"读取文件结束,开始导入!"
             time1 = time.time()
             time2 = time.time()
@@ -65,10 +65,5 @@ def upld(request):
     else:
         uf = UserForm()
     return render(request, 'upld.html', {'uf':uf})
-
-def handle_uploaded_file(f):
-    with open('some/file/name.txt', 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)
 
 
