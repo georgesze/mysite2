@@ -21,5 +21,5 @@ from disk import upld as upld_views
 urlpatterns = [
 	url(r'^disk/$', main_views.register),
     url(r'^admin/', include(admin.site.urls)),
-	url(r'^upload/$', upld_views.upld),
+    url(r'^upload/$', upld_views.upld),
 ]
