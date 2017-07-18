@@ -20,23 +20,20 @@ import time
 import random
 
 class UserForm(forms.Form):
-    filename = forms.CharField(max_length=50)
+    title = forms.CharField(max_length=50)
     file = forms.FileField()
 
 def upld(request):
     if request.method == "POST":
         uf = UserForm(request.POST,request.FILES)
         if uf.is_valid():
-		
-            # get form information
-            #filename = uf.cleaned_data['filename']
-            #headImg = uf.cleaned_data['headImg']
+
 		    # write to database
-            time1 = time.time()
-            myfile = request.FILES['file']
-		    # 打开文件
-            f = open(myfile)
+            handle_uploaded_file(request.FILES['file'])         			
+            # 打开文件
+            #f = open(myfile)
             #print u"读取文件结束,开始导入!"
+			time1 = time.time()
             time2 = time.time()
             WorkList = []
             next(f) #将文件标记移到下一行
@@ -69,6 +66,9 @@ def upld(request):
         uf = UserForm()
     return render(request, 'upld.html', {'uf':uf})
 
-
+def handle_uploaded_file(f):
+    with open('some/file/name.txt', 'wb+') as destination:
+    for chunk in f.chunks():
+            destination.write(chunk)
 
 
