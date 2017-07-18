@@ -14,6 +14,7 @@ from django.shortcuts import render,render_to_response
 from django import forms
 from django.http import HttpResponse
 from django.core.files import File
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 import time
 import random
