@@ -33,7 +33,7 @@ def upld(request):
             # 打开文件
             #f = open(myfile)
             #print u"读取文件结束,开始导入!"
-			time1 = time.time()
+            time1 = time.time()
             time2 = time.time()
             WorkList = []
             next(f) #将文件标记移到下一行
