@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*.pythonanywhere.com','george666.pythonanywhere.com','127.0.0.1']
 
+FILE_UPLOAD_HANDLERS = [ 
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler', 
+    'django.core.files.uploadhandler.MemoryFileUploadHandler', 
+]
 
 # Application definition
 

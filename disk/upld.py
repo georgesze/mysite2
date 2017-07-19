@@ -1,7 +1,7 @@
 #coding:utf-8 
 import csv
-import os 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "www.settings") 
+#import os 
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "www.settings") 
 
 #import django
 
@@ -28,45 +28,32 @@ def upld(request):
     if request.method == "POST":
         uf = UserForm(request.POST,request.FILES)
         if uf.is_valid():
-
-		    # write to database
             #handle_uploaded_file(request.FILES['file'])         			
             # 打开文件
-            f = request.FILES['file']
-            #f = open(request.FILES['file'])
-            #print u"读取文件结束,开始导入!"
-            time1 = time.time()
-            time2 = time.time()
-            WorkList = []
-            #next(f) #将文件标记移到下一行
-            y = 0
-            n = 1
-			
-            for line in f:
-                if y == 0:
-                    y = y + 1
-                    continue    # skip the first line
+            #f = request.FILES['file']
+            fname = request.FILES['file'].temporary_file_path()
+            #myfile = csv.reader(open(fname, 'r')) 
+            
+            with open(fname, 'r') as f:
+                reader = csv.reader(f)
                 
-                #row = line.replace(" ","") #将字典中的"替换空
-                row = line.split(',') #按;对字符串进行切片
-                y = y + 1
-                WorkList.append(Alimama(pid=row[0],commission=row[1]))
-	
-                n = n + 1
-                if n%5000==0:
-                    #print n
-                    Alimama.objects.bulk_create(WorkList)
-                    WorkList = []
-            time3 = time.time()
+                #print u"读取文件结束,开始导入!"
+                time1 = time.time()
+
+                WorkList = []            
+            
+                line_num = 0
+                for line in reader: 
+                    line_num = line_num + 1
+                    if (line_num != 1): 
+                        WorkList.append(Alimama(pid=line[28],commission=line[18]))
+        
             #print "读取文件耗时"+str(time2-time1)+"秒,导入数据耗时"+str(time3-time2)+"秒!"
-            time3 = time.time()
-            #print n
+            time2    = time.time()
+                       
             Alimama.objects.bulk_create(WorkList)
-            #print "读取文件耗时"+str(time2-time1)+"秒,导入数据耗时"+str(time3-time2)+"秒!"
-            WorkList = []
-            #print "成功导入数据"+str(y)+"条"
-            f.close() 
-									
+            time3 = time.time()
+            								
             return HttpResponse('upload ok!')
     else:
         uf = UserForm()
