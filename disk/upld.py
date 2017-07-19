@@ -1,7 +1,7 @@
 #coding:utf-8 
-
+import csv
 import os 
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "www.settings") 
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "www.settings") 
 
 #import django
 
@@ -18,9 +18,10 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 
 import time
 import random
+from django.http.multipartparser import FILE
 
 class UserForm(forms.Form):
-    title = forms.CharField(max_length=50)
+    #title = forms.CharField(max_length=50)
     file = forms.FileField()
 
 def upld(request): 
@@ -31,23 +32,28 @@ def upld(request):
 		    # write to database
             #handle_uploaded_file(request.FILES['file'])         			
             # 打开文件
-            f = open(request.FILES['file'])
+            f = request.FILES['file']
+            #f = open(request.FILES['file'])
             #print u"读取文件结束,开始导入!"
             time1 = time.time()
             time2 = time.time()
             WorkList = []
-            next(f) #将文件标记移到下一行
+            #next(f) #将文件标记移到下一行
             y = 0
             n = 1
 			
             for line in f:
-                row = line.replace('"','') #将字典中的"替换空
-                row = row.split(';') #按;对字符串进行切片
+                if y == 0:
+                    y = y + 1
+                    continue    # skip the first line
+                
+                #row = line.replace(" ","") #将字典中的"替换空
+                row = line.split(',') #按;对字符串进行切片
                 y = y + 1
                 WorkList.append(Alimama(pid=row[0],commission=row[1]))
 	
                 n = n + 1
-                if n%50000==0:
+                if n%5000==0:
                     #print n
                     Alimama.objects.bulk_create(WorkList)
                     WorkList = []
