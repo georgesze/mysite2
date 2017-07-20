@@ -1,6 +1,6 @@
 from django.contrib import admin
 
 # Register your models here.
-from disk.models import Alimama
+from disk.models import AliOrd
 
-admin.site.register(Alimama)
+admin.site.register(AliOrd)

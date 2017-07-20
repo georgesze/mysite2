@@ -9,7 +9,7 @@ import csv
     # django.setup()
 
 #from arrears.models import D072Qf 
-from disk.models import Alimama
+from disk.models import AliOrd
 from django.shortcuts import render,render_to_response
 from django import forms
 from django.http import HttpResponse
@@ -46,12 +46,42 @@ def upld(request):
                 for line in reader: 
                     line_num = line_num + 1
                     if (line_num != 1): 
-                        WorkList.append(Alimama(pid=line[28],commission=line[18]))
+                        WorkList.append(AliOrd(CreatDate=line[0],
+                                               ClickDate=line[1],
+                                               CommType=line[2],
+                                               CommId=line[3],
+                                               WangWangId=line[4],
+                                               StoreId=line[5],
+                                               CommQty=line[6],
+                                               CommPrice=line[7],
+                                               OrdStatus=line[8],
+                                               OrdType=line[9],
+                                               IncomePerc=line[10],
+                                               DividePerc=line[11],
+                                               PayAmount=line[12],
+                                               EstAmount=line[13],
+                                               SettleAmt=line[14],
+                                               EstIncome=line[15],
+                                               SettleDate=line[16],
+                                               RebatePerc=line[17],
+                                               RebateAmt=line[18],
+                                               AllowancePerc=line[19],
+                                               AllowanceAmt=line[20],
+                                               AllowanceType=line[21],
+                                               Platform=line[22],
+                                               ThirdParty=line[23],
+                                               OrderId=line[24],
+                                               Category=line[25],
+                                               MediaId=line[26],
+                                               MediaName=line[27],
+                                               PosID=line[28],
+                                               PosName=line[29]))
+           
         
             #print "读取文件耗时"+str(time2-time1)+"秒,导入数据耗时"+str(time3-time2)+"秒!"
             time2    = time.time()
-                       
-            Alimama.objects.bulk_create(WorkList)
+            #update_or_create           
+            AliOrd.objects.bulk_create(WorkList)
             time3 = time.time()
             								
             return HttpResponse('upload ok!')
@@ -59,4 +89,13 @@ def upld(request):
         uf = UserForm()
     return render(request, 'upld.html', {'uf':uf})
 
-
+#for row in api_data:
+#    if is_new_row(row, old_data):
+#        new_rows_array.append(row)
+#    else:
+#        if is_data_modified(row, old_data):
+#            ...
+#            # do the update
+#        else:
+#            continue
+# MyModel.objects.bulk_create(new_rows_array)
