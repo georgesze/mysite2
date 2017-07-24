@@ -22,17 +22,17 @@ class AliOrd(models.Model):
     CommPrice = models.CharField(max_length = 20, verbose_name='商品单价', default='')
     OrdStatus = models.CharField(max_length = 20, verbose_name='订单状态', default='')
     OrdType = models.CharField(max_length = 20, verbose_name='订单类型', default='')
-    IncomePerc = models.CharField(max_length = 20, verbose_name='收入比率', default='')
-    DividePerc = models.CharField(max_length = 20, verbose_name='分成比率', default='')
-    PayAmount = models.CharField(max_length = 20, verbose_name='付款金额', default='')
-    EstAmount = models.CharField(max_length = 20, verbose_name='预估效果', default='')
-    SettleAmt = models.CharField(max_length = 20, verbose_name='结算金额', default='')
-    EstIncome = models.CharField(max_length = 20, verbose_name='预估收入', default='')
+    IncomePerc = models.CharField(max_length = 8, verbose_name='收入比率', default='')
+    DividePerc = models.CharField(max_length = 8, verbose_name='分成比率', default='')
+    PayAmount = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='付款金额', default='')
+    EstAmount = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='预估效果', default='')
+    SettleAmt = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='结算金额', default='')
+    EstIncome = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='预估收入', default='')
     SettleDate = models.CharField(max_length = 20, verbose_name='结算时间', default='')
-    RebatePerc = models.CharField(max_length = 20, verbose_name='佣金比例', default='')
-    RebateAmt = models.CharField(max_length = 20, verbose_name='佣金金额', default='')
-    AllowancePerc = models.CharField(max_length = 20, verbose_name='补贴比例', default='')
-    AllowanceAmt = models.CharField(max_length = 20, verbose_name='补贴金额', default='')
+    RebatePerc = models.CharField(max_length = 8, verbose_name='佣金比例', default='')
+    RebateAmt = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='佣金金额', default='')
+    AllowancePerc = models.CharField(max_length = 8, verbose_name='补贴比例', default='')
+    AllowanceAmt = models.CharField(max_length = 8, verbose_name='补贴金额', default='')
     AllowanceType = models.CharField(max_length = 20, verbose_name='补贴类型', default='')
     Platform = models.CharField(max_length = 20, verbose_name='成交平台', default='')
     ThirdParty = models.CharField(max_length = 20, verbose_name='第三方服务', default='')
@@ -43,14 +43,35 @@ class AliOrd(models.Model):
     PosID = models.CharField(max_length = 20, verbose_name='广告位ID', default='')
     PosName = models.CharField(max_length = 20, verbose_name='广告位名称', default='')
     
-	
     class meta:
         verbose_name = "推广订单"
         verbose_name_plural = "推广订单"
             
-    
     def __str__(self):
         return self.OrderId
     
-        
+class AliConfig(models.Model):    
+    AgentId = models.CharField(max_length = 20, verbose_name='代理广告位', default='')
+    AgentName = models.CharField(max_length = 20, verbose_name='代理名称', default='')
+    AgentUpId = models.CharField(max_length = 20, verbose_name='上线广告位', blank=True)
+    AgentUpName = models.CharField(max_length = 20, verbose_name='上线名称', blank=True)
+    AgentPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='自获佣金比例', default='')
+    Agent2rdPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='提取二级佣金比例', default='')
+    Agent3rdPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='提取三级佣金比例', default='')
+    ZhaohuoPid = models.CharField(max_length = 20, verbose_name='找货广告位', default='', blank=True)
+    ZhaohuoName = models.CharField(max_length = 20, verbose_name='找货名称', default='', blank=True)    
+    ZhaohuoPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='找货佣金比例', default='', blank=True)
+    ZhaohuoBot = models.CharField(max_length = 20, verbose_name='找货机器人', default='', blank=True)
+    GroupId = models.CharField(max_length = 20, verbose_name='团队合伙人', default='', blank=True)
+    TopLevel = models.CharField(max_length = 20, verbose_name='顶级账号', default='', blank=True)
+    Active = models.BooleanField(verbose_name='激活状态', default='')
+    ValidBegin = models.DateField(verbose_name='有效期开始时间', default='', blank=True)
+    ValidEnd = models.DateField(verbose_name='有效期结束时间', default='', blank=True)
+    
+    class meta:
+        verbose_name = "代理配置"
+        verbose_name_plural = "代理配置"
+            
+    def __str__(self):
+        return self.AgentName       
         
