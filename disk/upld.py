@@ -87,7 +87,9 @@ def upld(request):
             return HttpResponse('upload ok!')
     else:
         uf = UserForm()
-    return render(request, 'upld.html', {'uf':uf})
+        order_list = AliOrd.objects.all()
+    return render(request, 'upld.html', {'uf':uf,
+                                         'order_list':order_list})
 
 #for row in api_data:
 #    if is_new_row(row, old_data):
