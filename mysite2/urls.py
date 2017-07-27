@@ -17,9 +17,13 @@ from django.conf.urls import include,url
 from django.contrib import admin
 from disk import views as main_views
 from disk import upld as upld_views
+from disk import search as search_views
+from . import search2
 
 urlpatterns = [
 	url(r'^disk/$', main_views.register),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^upload/$', upld_views.upld),
+    url(r'^search/$', search_views.search),
+    url(r'^search-post$', search2.search_post),
 ]

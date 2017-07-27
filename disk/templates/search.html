@@ -6,9 +6,9 @@
 </head>
 <body>
 
- <form action="/calculate" method="get">
+ <form method="post">
   {% csrf_token %}
-     计算月份：<input type="month" value="2017-05" name="calculate">
+     计算月份：<input type="month" name="calculate">
   <input type="submit" value="计算当月佣金">
 </form>
 
