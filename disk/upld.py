@@ -92,6 +92,29 @@ def upld(request):
     return render(request, 'upld.html', {'uf':uf,
                                          'order_list':order_list})
 
+
+def search(request):  
+    #request.encoding='utf-8'
+    if 'qstart' and 'qend' in request.POST:
+        message = '你搜索的内容为: ' + request.POST['qstart'] + request.POST['qend']
+    else:
+        message = '你提交了空表单'
+    return HttpResponse(message)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #for row in api_data:
 #    if is_new_row(row, old_data):
 #        new_rows_array.append(row)

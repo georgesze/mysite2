@@ -13,10 +13,11 @@
 	<input type="submit" value="上传到数据库"/>
 </form>
 
-<form action="/search" method="get">
+<form action="/upload" method="post">
+  {% csrf_token %}
      起始日期：<input type="date" value="2017-05-01" name="qstart">
      结束日期：<input type="date" value="2017-05-31" name="qend">
-  <input type="submit" value="搜索">
+  <input type="submit" value="搜索订单">
 </form>
 
 <h1>{{ order_list }}</h1>
