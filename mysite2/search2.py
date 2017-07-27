@@ -2,10 +2,13 @@
  
 from django.shortcuts import render
 from django.views.decorators import csrf
+from disk.models import AliConfig
+ 
  
 # 接收POST请求数据
-def search_post(request):
-    ctx ={}
-    if request.POST:
-        ctx['rlt'] = request.POST['q']
-    return render(request, "post.html", ctx)
+def Calculate(request):
+    agent_list = AliConfig.objects.all()
+    agent_dict = {'agents': agent_list}
+    
+    
+    return render(request, "payslip.html", agent_dict)

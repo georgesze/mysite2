@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>买买买分享网</title>
+</head>
+<body>
+    <form action="/payslip/" method="post">
+  			{% csrf_token %}
+     		计算月份：<input type="month" name="calculate">
+  			<input type="submit" value="计算当月佣金">
+    </form>
+ 
+<h1>Rango says...hello world!</h1>
+
+        {% if agents %}
+            <ul>
+                {% for AliConfig in agents %}
+                <li>{{ AliConfig.AgentId }} {{ AliConfig.AgentId.AgentId }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <strong>There are no Agent present.</strong>
+        {% endif %}
+        
+<UL>
+     <LI> ... Level one, number one...
+     <OL> 
+        <LI> ... Level two, number one...
+        <LI> ... Level two, number two...
+        <OL start="10"> 
+           <LI> ... Level three, number one...
+        </OL> 
+        <LI> ... Level two, number three...
+     </OL> 
+     <LI> ... Level one, number two...
+</UL>	        
+        
+        
+</body>
+</html>
+
+
