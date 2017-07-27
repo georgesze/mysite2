@@ -87,6 +87,7 @@ def upld(request):
             return HttpResponse('upload ok!')
     else:
         uf = UserForm()
+        #Person.objects.filter(age__gt=18).values_list()#括号可以指定需要的字段，一般使用这种方法。
         order_list = AliOrd.objects.all()
     return render(request, 'upld.html', {'uf':uf,
                                          'order_list':order_list})
