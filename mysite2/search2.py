@@ -6,9 +6,11 @@ from disk.models import AliConfig
  
  
 # 接收POST请求数据
-def Calculate(request):
+def AgentPay(request):
+    #拿到所有agent配置
     agent_list = AliConfig.objects.all()
-    agent_dict = {'agents': agent_list}
+    #agent_dict = {'agents': agent_list}
     
-    
-    return render(request, "payslip.html", agent_dict)
+    # context must be dict type rather than query set
+#    return render(request, "payslip.html", agent_dict)
+    return render(request, "payslip.html", {'queryset': agent_list})

@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^upload/$', upld_views.upld),
     url(r'^search/$', search_views.search),
-    url(r'^payslip/$', search2.Calculate),
+    url(r'^payslip/$', search2.AgentPay),
 ]

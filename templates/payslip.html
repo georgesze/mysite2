@@ -13,29 +13,20 @@
  
 <h1>Rango says...hello world!</h1>
 
-        {% if agents %}
+        {% if queryset %}
             <ul>
-                {% for AliConfig in agents %}
-                <li>{{ AliConfig.AgentId }} {{ AliConfig.AgentId.AgentId }}</li>
+                {% for AliConfig in queryset %}
+                <li>
+                	{{ AliConfig.AgentId }} 
+                	{{ AliConfig.AgentId.AgentName }}
+                	{{ AliConfig.AgentId.AgentId }}
+                </li>
                 {% endfor %}
             </ul>
         {% else %}
             <strong>There are no Agent present.</strong>
         {% endif %}
-        
-<UL>
-     <LI> ... Level one, number one...
-     <OL> 
-        <LI> ... Level two, number one...
-        <LI> ... Level two, number two...
-        <OL start="10"> 
-           <LI> ... Level three, number one...
-        </OL> 
-        <LI> ... Level two, number three...
-     </OL> 
-     <LI> ... Level one, number two...
-</UL>	        
-        
+              
         
 </body>
 </html>
