@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//disk/migrations/0003_auto_20170730_0021.py=utf-8
+encoding//disk/migrations/0005_aliconfig_slug.py=utf-8
 encoding//disk/models.py=UTF-8
 encoding//disk/search.py=utf-8
 encoding//disk/upld.py=utf-8

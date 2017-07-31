@@ -1,5 +1,5 @@
 from django.db import models
-from django.template.defaultfilters import default
+from django.template.defaultfilters import default,slugify
 from django.forms.widgets import Media
 
 # Create your models here.
@@ -66,7 +66,7 @@ class AliConfig(models.Model):
         verbose_name_plural = "代理配置"
           
     AgentId = models.OneToOneField('Agent', related_name='AId', default=None, blank=True, null=True)
-    AgentName = models.CharField(max_length = 20, verbose_name='代理名称', default='')
+    AgentName = models.CharField(max_length = 20, verbose_name='代理名称', default=None, blank=True, null=True)
     AgentUpId = models.ForeignKey('Agent', related_name='AUpId', default=None, blank=True, null=True)
     AgentUpName = models.CharField(max_length = 20, verbose_name='上线名称', blank=True)
     AgentPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='自获佣金比例')
@@ -81,7 +81,12 @@ class AliConfig(models.Model):
     Active = models.BooleanField(verbose_name='激活状态', default='')
     ValidBegin = models.DateField(verbose_name='有效期开始时间', blank=True, null=True)
     ValidEnd = models.DateField(verbose_name='有效期结束时间', blank=True, null=True)
-
+    Slug = models.SlugField(blank=True, null=True)
+    
+    def save(self, *args, **kwargs):
+                self.Slug = slugify(self.AgentId.AgentId)
+                super(AliConfig, self).save(*args, **kwargs)
+    
     def __str__(self):
         return self.AgentId.AgentName       
     #===========================================================================
