@@ -25,12 +25,14 @@ def Agent(request, agent_name_slug):
         # Can we find a order name slug with the given name?
         # If we can't, the .get() method raises a DoesNotExist exception.
         # So the .get() method returns one model instance or raises an exception.
-        current_agent = AliConfig.objects.get(slug=agent_name_slug)
-        context_dict['agent_name'] = AliConfig.AgentId
+        current_agent = AliConfig.objects.get(Slug=agent_name_slug)
+        context_dict['agent_name'] = current_agent.AgentId.AgentName + current_agent.AgentId.AgentId
 
         # Retrieve all of the associated pages.
         # Note that filter returns >= 1 model instance.
-        agent_orders = Page.objects.filter(order=order)
+        agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId)
+        #agent_orders = AliOrd.objects.all()
+        
 
         # Adds our results list to the template context under name pages.
         context_dict['agent_orders'] = agent_orders

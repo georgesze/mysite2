@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Rango</title>
+    </head>
+
+    <body>
+        <h1>{{ agent_name }}</h1>
+        {% if current_agent %}
+            {% if agent_orders %}
+            <ul>
+                {% for AliOrd in agent_orders %}
+                <li>
+                	<a href="{{ AliOrd.CommId }}">{{ AliOrd.PayAmount }}</a>
+                	{{ AliOrd.PosID }}
+                	{{ AliOrd.PosName }}
+                	{{ AliOrd.UplineName }}
+                	{{ AliOrd.Up2lineName }}
+                	{{ AliOrd.OrderId}}
+                </li>                
+                {% endfor %}
+            </ul>
+            {% else %}
+                <strong>No orders currently.</strong>
+            {% endif %}
+        {% else %}
+            The specified agent {{ agent_name }} does not exist!
+        {% endif %}
+    </body>
+</html>

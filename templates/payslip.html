@@ -17,9 +17,11 @@
             <ul>
                 {% for AliConfig in queryset %}
                 <li>
+                	<a href="/payslip/{{ AliConfig.Slug }}">
                 	{{ AliConfig.AgentId }} 
                 	{{ AliConfig.AgentId.AgentName }}
                 	{{ AliConfig.AgentId.AgentId }}
+                	</a>
                 </li>
                 {% endfor %}
             </ul>
