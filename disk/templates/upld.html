@@ -9,7 +9,7 @@
 <h1>订单上传、查询</h1>
 <form method="post" enctype="multipart/form-data" >
 	{% csrf_token %}
-	{{uf.as_p}}
+	{{uf}}
 	<input type="submit" value="上传到数据库"/>
 </form>
 

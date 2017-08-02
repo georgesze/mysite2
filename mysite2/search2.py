@@ -3,14 +3,23 @@
 from django.shortcuts import render
 from django.views.decorators import csrf
 from disk.models import AliConfig,AliOrd
- 
+from django import forms
+
+class UserForm(forms.Form):
+    #title = forms.CharField(max_length=50)
+    file = forms.DateField
  
 # 接收POST请求数据
-def AgentPay(request):
+def AgentList(request):
     #拿到所有agent配置
     agent_list = AliConfig.objects.all()
     #agent_dict = {'agents': agent_list}
-    
+    if request.method == "POST":
+        form = UserForm(request.POST)
+        
+    else:
+        form = UserForm()
+     
     # context must be dict type rather than query set
 #    return render(request, "payslip.html", agent_dict)
     return render(request, "payslip.html", {'queryset': agent_list})

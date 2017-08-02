@@ -7,11 +7,12 @@
 <body>
     <form action="/payslip/" method="post">
   			{% csrf_token %}
-     		计算月份：<input type="month" name="calculate">
+  			{{ period }}
+     		计算月份：<input type="month" name="sel_period">
   			<input type="submit" value="计算当月佣金">
     </form>
- 
-<h1>Rango says...hello world!</h1>
+
+<h1>收入统计结果：</h1>
 
         {% if queryset %}
             <ul>
