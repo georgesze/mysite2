@@ -4,25 +4,34 @@ from django.shortcuts import render
 from django.views.decorators import csrf
 from disk.models import AliConfig,AliOrd
 from django import forms
+import datetime
 
-class UserForm(forms.Form):
+class SearchForm(forms.Form):
     #title = forms.CharField(max_length=50)
-    file = forms.DateField
- 
+    period_str = forms.DateField(initial=datetime.date.today,widget=forms.SelectDateWidget())
+    period_end = forms.DateField(initial=datetime.date.today,widget=forms.SelectDateWidget())
+
+p1=''
+    
 # 接收POST请求数据
 def AgentList(request):
     #拿到所有agent配置
     agent_list = AliConfig.objects.all()
-    #agent_dict = {'agents': agent_list}
+    p1=period_str
+    
     if request.method == "POST":
-        form = UserForm(request.POST)
+        form = SearchForm(request.POST)
+        
+        #agent_list = AliConfig.objects.filter()
+        agent_list = AliConfig.objects.all()
         
     else:
-        form = UserForm()
+        form = SearchForm()
      
     # context must be dict type rather than query set
 #    return render(request, "payslip.html", agent_dict)
-    return render(request, "payslip.html", {'queryset': agent_list})
+    return render(request, "payslip.html", {'form_agent': agent_list,
+                                            'form_period':form})
 
 
 
@@ -39,7 +48,7 @@ def Agent(request, agent_name_slug):
 
         # Retrieve all of the associated pages.
         # Note that filter returns >= 1 model instance.
-        agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId)
+        agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,CreatDate=p1)
         #agent_orders = AliOrd.objects.all()
         
 

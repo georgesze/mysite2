@@ -7,16 +7,16 @@
 <body>
     <form action="/payslip/" method="post">
   			{% csrf_token %}
-  			{{ period }}
-     		计算月份：<input type="month" name="sel_period">
+  			{{ form_period.as_p }}
+<!--      		计算月份：<input type="month" name="sel_period"> -->
   			<input type="submit" value="计算当月佣金">
     </form>
 
 <h1>收入统计结果：</h1>
 
-        {% if queryset %}
+        {% if form_agent %}
             <ul>
-                {% for AliConfig in queryset %}
+                {% for AliConfig in form_agent %}
                 <li>
                 	<a href="/payslip/{{ AliConfig.Slug }}">
                 	{{ AliConfig.AgentId }} 
