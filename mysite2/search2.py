@@ -17,11 +17,11 @@ p1=''
 def AgentList(request):
     #拿到所有agent配置
     agent_list = AliConfig.objects.all()
-    p1=period_str
+    
     
     if request.method == "POST":
         form = SearchForm(request.POST)
-        
+        p1 = form.period_str
         #agent_list = AliConfig.objects.filter()
         agent_list = AliConfig.objects.all()
         
