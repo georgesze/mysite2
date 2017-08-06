@@ -8,22 +8,28 @@ import datetime
 
 class SearchForm(forms.Form):
     #title = forms.CharField(max_length=50)
-    period_str = forms.DateField(initial=datetime.date.today,widget=forms.SelectDateWidget())
-    period_end = forms.DateField(initial=datetime.date.today,widget=forms.SelectDateWidget())
+    period_str = forms.DateField(initial=datetime.date(2017, 6, 1),widget=forms.SelectDateWidget())
+    period_end = forms.DateField(initial=datetime.date(2017, 6, 30),widget=forms.SelectDateWidget())
 
-p1=''
-    
+   
 # 接收POST请求数据
 def AgentList(request):
     #拿到所有agent配置
     agent_list = AliConfig.objects.all()
-    
-    
+      
     if request.method == "POST":
         form = SearchForm(request.POST)
-        p1 = form.period_str
-        #agent_list = AliConfig.objects.filter()
-        agent_list = AliConfig.objects.all()
+        
+        if form.is_valid():
+            #start = request.GET.get('start_date')
+            start = form.cleaned_data.get('period_str')
+            request.session['start'] = str(start)
+            
+            end = form.cleaned_data.get('period_end')
+            request.session['end'] = str(end)
+            
+            #agent_list = AliConfig.objects.filter()
+            agent_list = AliConfig.objects.all()
         
     else:
         form = SearchForm()
@@ -48,7 +54,15 @@ def Agent(request, agent_name_slug):
 
         # Retrieve all of the associated pages.
         # Note that filter returns >= 1 model instance.
-        agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,CreatDate=p1)
+        start = request.session.get('start')
+        end = request.session.get('end')
+        
+        start = datetime.datetime.strptime(start, "%Y-%m-%d").date()
+        end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
+        
+        agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,CreatDate__range=(start, end))
+        #agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,CreatDate__contains=datetime.date(2017,5,15))   CreatDate__contains=end
+        
         #agent_orders = AliOrd.objects.all()
         
 
