@@ -19,14 +19,21 @@ def AgentList(request):
       
     if request.method == "POST":
         form = SearchForm(request.POST)
-        
         if form.is_valid():
-            #start = request.GET.get('start_date')
             start = form.cleaned_data.get('period_str')
             request.session['start'] = str(start)
             
             end = form.cleaned_data.get('period_end')
             request.session['end'] = str(end)
+            
+            #计算佣金
+            start = request.session.get('start')
+            end = request.session.get('end')
+        
+            start = datetime.datetime.strptime(start, "%Y-%m-%d").date()
+            end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
+        
+            agent_orders = AliOrd.objects.filter(SettleDate__range=(start, end))            
             
             #agent_list = AliConfig.objects.filter()
             agent_list = AliConfig.objects.all()
@@ -60,7 +67,8 @@ def Agent(request, agent_name_slug):
         start = datetime.datetime.strptime(start, "%Y-%m-%d").date()
         end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
         
-        agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,CreatDate__range=(start, end))
+        # settle date 订单结算时间
+        agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,SettleDate__range=(start, end))
         #agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,CreatDate__contains=datetime.date(2017,5,15))   CreatDate__contains=end
         
         #agent_orders = AliOrd.objects.all()

@@ -14,7 +14,7 @@ class User(models.Model):
 class AliOrd(models.Model):
     CreatDate = models.DateTimeField(verbose_name='创建时间', default='')
     ClickDate = models.DateTimeField(verbose_name='点击时间', default='')
-    CommType = models.CharField(max_length = 20, verbose_name='商品信息', default='')
+    CommType = models.CharField(max_length = 40, verbose_name='商品信息', default='')
     CommId = models.CharField(max_length = 20, verbose_name='商品ID', default='')
     WangWangId = models.CharField(max_length = 20, verbose_name='掌柜旺旺', default='')
     StoreId = models.CharField(max_length = 20, verbose_name='所属店铺', default='')
@@ -28,7 +28,7 @@ class AliOrd(models.Model):
     EstAmount = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='预估效果')
     SettleAmt = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='结算金额')
     EstIncome = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='预估收入')
-    SettleDate = models.CharField(max_length = 20, verbose_name='结算时间', default='')
+    SettleDate = models.DateTimeField(verbose_name='结算时间', default='')
     RebatePerc = models.CharField(max_length = 8, verbose_name='佣金比例', default='')
     RebateAmt = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='佣金金额')
     AllowancePerc = models.CharField(max_length = 8, verbose_name='补贴比例', default='')
