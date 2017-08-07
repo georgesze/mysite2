@@ -97,22 +97,26 @@ def CalculateAgentOrder(agent,start,end):
                
     for order_item in orders:  
         #取得上线信息
-        order_tiem.UplineId = agent.AgentId.AgentUpId           #上线ID
-        order_tiem.UplineName = agent.AgentId.AgentName         #上线名称
-        #order_tiem.Up2lineId = agent.AgentId.                     #上上线ID
-        order_tiem.IncomePercSelf = agent.AgentPerc             #自获佣金比例
-        order_tiem.SharePercUp1 = agent.Agent2rdPerc            #贡献上级佣金比例
-        order_tiem.SharePercUp2 = agent.Agent3rdPerc    #贡献上上级佣金比例
+        order_item.UplineId = agent.AgentUpId.AId.AgentId        #上线ID
+        
         # 计算佣金分成 ---- 计算使用SettleAmt结算金额 ----
-        order_tiem.IncomeSelf = order_item * agent.AgentPerc    #自获佣金
-        order_tiem.ShareUp1 = order_item * agent.Agent2rdPerc   #贡献上级佣金
-        order_tiem.ShareUp2 = order_item * agent.Agent3rdPerc   #贡献上上级佣金
-
-        #计算个人所得佣金
-
+        #计算个人所得佣金    
+        order_item.IncomePercSelf = agent.AgentPerc             #自获佣金比例
+        order_item.IncomeSelf = order_item.SettleAmt * agent.AgentPerc    #自获佣金        
+        
         #计算上线分成佣金
-  
+        if not order_item.UplineId =='':
+            order_item.UplineName = agent.AgentUpId.AId.AgentName       #上线名称
+            order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
+            order_item.ShareUp1 = order_item.SettleAmt * agent.Agent2rdPerc       #贡献上级佣金
+        
         #计算上上线分成佣金
+        order_item.Up2lineId = agent.AgentUpId.AUpId.AgentId    #上上线ID
+        
+        if not order_item.Up2lineId =='':   
+            order_item.Up2lineName = agent.AgentUpId.AUpId.AgentName    #上上线名称   
+            order_item.SharePercUp2 = agent.Agent3rdPerc                #贡献上上级佣金比例
+            order_item.ShareUp2 = order_item.SettleAmt * agent.Agent3rdPerc       #贡献上上级佣金
         
         #保存计算结果
         order_item.save()
