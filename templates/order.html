@@ -1,30 +1,56 @@
 <!DOCTYPE html>
 <html>
     <head>
+    <meta charset="utf-8">
         <title>Rango</title>
     </head>
 
     <body>
-        <h1>{{ agent_name }}</h1>
-        {% if current_agent %}
-            {% if agent_orders %}
-            <ul>
-                {% for AliOrd in agent_orders %}
-                <li>
-                	<a href="{{ AliOrd.CommId }}">{{ AliOrd.PayAmount }}</a>
-                	{{ AliOrd.PosID }}
-                	{{ AliOrd.PosName }}
-                	{{ AliOrd.UplineName }}
-                	{{ AliOrd.Up2lineName }}
-                	{{ AliOrd.OrderId}}
-                </li>                
-                {% endfor %}
-            </ul>
+        <h1>{{ agent_name }}</h1>    
+  
+        
+<table summary="AgentOrder" border="1" width="80%" align="left">
+	<tbody>
+		<tr>
+		<th colspan="2">代理</th>
+		<th>淘宝订单号</th>
+		<th colspan="2">代理上线</th>
+		<th colspan="2">代理上上线</th>
+		<th>自获佣金比例</th>
+		<th>贡献上级佣金比例</th>
+		<th>贡献上上级佣金比例</th>
+		<th>自获佣金额</th>
+		<th>贡献上级佣金额</th>
+		<th>贡献上上级佣金额</th>
+		</tr>
+		{% if current_agent %}
+			{% if agent_orders %}
+				{% for AliOrd in agent_orders %}
+				<tr>
+				<td align="right">{{ AliOrd.PosName }}</td>
+				<td align="right">{{ AliOrd.PosID }}</td>
+				<td align="right">{{ AliOrd.OrderId }}</td>
+				<td align="right">{{ AliOrd.UplineId }}</td>
+				<td align="right">{{ AliOrd.UplineName }}</td>
+				<td align="right">{{ AliOrd.Up2lineId }}</td>
+				<td align="right">{{ AliOrd.Up2lineName }}</td>
+				<td align="right">{{ AliOrd.IncomePercSelf}}</td>
+				<td align="right">{{ AliOrd.SharePercUp1 }}</td>
+				<td align="right">{{ AliOrd.SharePercUp2 }}</td>
+				<td align="right">{{ AliOrd.IncomeSelf }}</td>
+				<td align="right">{{ AliOrd.ShareUp1 }}</td>
+				<td align="right">{{ AliOrd.ShareUp2 }}</td>
+				</tr>
+				{% endfor %}
             {% else %}
                 <strong>No orders currently.</strong>
             {% endif %}
         {% else %}
             The specified agent {{ agent_name }} does not exist!
-        {% endif %}
+        {% endif %}   		
+	</tbody>
+</table>          
+        
+
     </body>
 </html>
