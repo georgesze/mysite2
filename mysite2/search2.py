@@ -2,8 +2,10 @@
  
 from django.shortcuts import render
 from django.views.decorators import csrf
+from django.db.models import Count, Min, Sum, Avg
 from disk.models import AliConfig,AliOrd
 from django import forms
+
 import datetime
 
 class SearchForm(forms.Form):
@@ -40,6 +42,8 @@ def AgentList(request):
                 # 计算所有订单佣金 volume 2000+
                 CalculateAgentOrder(agent,start,end)
                 
+                # 计算收入 个人订单收入 + 一级下线贡献佣金 + 二级下线贡献佣金
+                CalculateIncome(agent,agent_list,start,end)
                 
     else:
         form = SearchForm()
@@ -120,3 +124,21 @@ def CalculateAgentOrder(agent,start,end):
         
         #保存计算结果
         order_item.save()
+        
+def CalculateIncome(agent,agent_list,start,end):
+    agent_pid = agent.AgentId.AgentId   
+    
+    #个人订单收入
+    #AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).annotate(Income1=Sum('SettleAmt'))
+    
+    aggregated = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).aggregate(Income1=Sum('SettleAmt'))
+    if aggregated['Income1'] is not '':
+            
+        agent.IncomeSelf = aggregated['Income1'] 
+        agent.IncomeSelf = agent.IncomeSelf * agent.AgentPerc
+
+    #一级下线贡献佣金   
+    
+    
+    # 二级下线贡献佣金
+    

@@ -13,25 +13,48 @@
     </form>
 
 <h1>收入统计结果：</h1>
-
+<table summary="AgentOrder" border="1" width="80%" align="left">
+	<tbody>
+		<tr>
+		<th colspan="2">代理</th>
+		<th colspan="2">代理上线</th>
+<!-- 		<th colspan="2">代理上上线</th> -->
+		<th>自获佣金比例</th>
+		<th>贡献上级佣金比例</th>
+		<th>贡献上上级佣金比例</th>		
+		<th>自获佣金</th>
+		<th>一级下线贡献佣金</th>
+		<th>二级下线贡献佣金</th>
+		<th>总佣金</th>
+		<th>明细链接</th>
+		</tr>
         {% if form_agent %}
-            <ul>
+
                 {% for AliConfig in form_agent %}
-                <li>
-                	<a href="/payslip/{{ AliConfig.Slug }}">
-                	{{ AliConfig.AgentId }} 
-                	{{ AliConfig.AgentId.AgentName }}
-                	{{ AliConfig.AgentId.AgentId }}
-                	</a>
-                </li>
+				<tr>	
+                
+                <td align="right">{{ AliConfig.AgentId.AgentId }}</td>
+				<td align="right">{{ AliConfig.AgentId.AgentName }}</td>
+				<td align="right">{{ AliConfig.AgentUpId.AgentId }}</td>
+				<td align="right">{{ AliConfig.AgentUpId.AgentName }}</td>
+				<td align="right" width="100">{{ AliConfig.AgentPerc}}</td>
+				<td align="right" width="100">{{ AliConfig.Agent2rdPerc }}</td>
+				<td align="right" width="120">{{ AliConfig.Agent3rdPerc }}</td>
+				<td align="right">{{ AliConfig.IncomeSelf }}</td>	
+				<td align="right">{{ IncomeLv1 }}</td>
+				<td align="right">{{ IncomeLv2 }}</td>
+				<td align="right">{{ IncomeTotal }}</td>
+				<td align="right"><a href="/payslip/{{ AliConfig.Slug }}">点我查看明细</a></td>
+				</tr>
+                	
+
                 {% endfor %}
-            </ul>
+
         {% else %}
             <strong>There are no Agent present.</strong>
         {% endif %}
-              
+	</tbody>
+</table>               	
         
 </body>
 </html>
-
-
