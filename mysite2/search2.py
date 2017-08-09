@@ -129,13 +129,11 @@ def CalculateIncome(agent,agent_list,start,end):
     agent_pid = agent.AgentId.AgentId   
     
     #个人订单收入
-    #AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).annotate(Income1=Sum('SettleAmt'))
-    
     aggregated = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).aggregate(Income1=Sum('SettleAmt'))
-    if aggregated['Income1'] is not '':
-            
-        agent.IncomeSelf = aggregated['Income1'] 
-        agent.IncomeSelf = agent.IncomeSelf * agent.AgentPerc
+    if aggregated['Income1'] == None:
+        agent.IncomeSelf = 0
+    else:       
+        agent.IncomeSelf = aggregated['Income1'] * agent.AgentPerc
 
     #一级下线贡献佣金   
     
