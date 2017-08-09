@@ -13,6 +13,7 @@
     </form>
 
 <h1>收入统计结果：</h1>
+<h1>期间总收入（所有导入数据）： {{ Incometotal }}</h1>
 <table summary="AgentOrder" border="1" width="80%" align="left">
 	<tbody>
 		<tr>
@@ -41,9 +42,9 @@
 				<td align="right" width="100">{{ AliConfig.Agent2rdPerc }}</td>
 				<td align="right" width="120">{{ AliConfig.Agent3rdPerc }}</td>
 				<td align="right">{{ AliConfig.IncomeSelf }}</td>	
-				<td align="right">{{ IncomeLv1 }}</td>
-				<td align="right">{{ IncomeLv2 }}</td>
-				<td align="right">{{ IncomeTotal }}</td>
+				<td align="right">{{ AliConfig.IncomeLv1 }}</td>
+				<td align="right">{{ AliConfig.IncomeLv2 }}</td>
+				<td align="right">{{ AliConfig.IncomeTotal }}</td>
 				<td align="right"><a href="/payslip/{{ AliConfig.Slug }}">点我查看明细</a></td>
 				</tr>
                 	

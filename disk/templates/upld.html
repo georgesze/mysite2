@@ -1,18 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title></title>
-</head>
-<body>
-<h1>订单上传、查询</h1>
+<!DOCTYPE html>
+<html>
+
+    <head>
+    <meta charset="utf-8">
+        <title> </title>
+    </head>
+
+    <body>
+    
+<h1>订单上传</h1>
 <form method="post" enctype="multipart/form-data" >
 	{% csrf_token %}
 	{{uf}}
-	<input type="submit" value="上传到数据库"/>
+	<input type="submit" value="上传到数据库" name="upload_order"/>
 </form>
 
+<h1>代理信息上传</h1>
+	<form action="" method="post" enctype="multipart/form-data" >
+		{% csrf_token %}
+		{{ agent_file }}
+
+		<input type="submit" value="上传到数据库" name="upload_agent"/>
+	</form>
+
+
+
+<h1>订单查询</h1>
 <form action="/upload" method="post">
   {% csrf_token %}
      起始日期：<input type="date" value="2017-05-01" name="qstart">
@@ -20,6 +33,8 @@
   <input type="submit" value="搜索订单">
 </form>
 
+
 <h1>{{ order_list }}</h1>
+
 </body>	
 </html>

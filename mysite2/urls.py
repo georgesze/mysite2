@@ -21,10 +21,11 @@ from disk import search as search_views
 from . import search2
 
 urlpatterns = [
+    url(r'^$', main_views.index, name='index'),
 	url(r'^disk/$', main_views.register),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^upload/$', upld_views.upld),
     url(r'^search/$', search_views.search),
     url(r'^payslip/$', search2.AgentList),
-    url(r'^payslip/(?P<agent_name_slug>[\w\-]+)/$', search2.Agent, name='Agent'),
+    url(r'^payslip/(?P<agent_name_slug>[\w\-]+)/$', search2.AgentDetail, name='Agent'),
 ]

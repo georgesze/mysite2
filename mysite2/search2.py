@@ -18,6 +18,7 @@ class SearchForm(forms.Form):
 def AgentList(request):
     #拿到所有agent配置
     agent_list = AliConfig.objects.all()
+    Incometotal = 0
       
     if request.method == "POST":
         form = SearchForm(request.POST)
@@ -38,24 +39,31 @@ def AgentList(request):
             #agent_list = AliConfig.objects.filter()
             agent_list = AliConfig.objects.all()
             
+            #取到期间总金额 from upload
+            aggregated = AliOrd.objects.filter(SettleDate__range=(start, end)).aggregate(total=Sum('SettleAmt'))      
+            Incometotal = aggregated['total']
+                
+            
+            # 遍历所有 代理 计算
             for agent in agent_list:
                 # 计算所有订单佣金 volume 2000+
                 CalculateAgentOrder(agent,start,end)
                 
                 # 计算收入 个人订单收入 + 一级下线贡献佣金 + 二级下线贡献佣金
-                CalculateIncome(agent,agent_list,start,end)
+                CalculateIncome(agent,start,end)
                 
     else:
         form = SearchForm()
      
     # context must be dict type rather than query set
 #    return render(request, "payslip.html", agent_dict)
-    return render(request, "payslip.html", {'form_agent': agent_list,
-                                            'form_period':form})
+    return render(request, "payslip.html", {'form_agent':agent_list,
+                                            'form_period':form,
+                                            'Incometotal':Incometotal})
 
 
 
-def Agent(request, agent_name_slug):
+def AgentDetail(request, agent_name_slug):
     # Create a context dictionary which we can pass to the template rendering engine.
     context_dict = {}
 
@@ -125,18 +133,32 @@ def CalculateAgentOrder(agent,start,end):
         #保存计算结果
         order_item.save()
         
-def CalculateIncome(agent,agent_list,start,end):
+        
+        
+def CalculateIncome(agent,start,end):
     agent_pid = agent.AgentId.AgentId   
     
     #个人订单收入
-    aggregated = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).aggregate(Income1=Sum('SettleAmt'))
-    if aggregated['Income1'] == None:
+    aggregated1 = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).aggregate(Income=Sum('SettleAmt'))
+    if aggregated1['Income'] == None:
         agent.IncomeSelf = 0
     else:       
-        agent.IncomeSelf = aggregated['Income1'] * agent.AgentPerc
+        agent.IncomeSelf = aggregated1['Income'] * agent.AgentPerc
 
     #一级下线贡献佣金   
-    
-    
+    aggregatedLv1 = AliOrd.objects.filter(UplineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv1=Sum('SettleAmt'))
+    if aggregatedLv1['IncomeLv1'] == None:
+        agent.IncomeLv1 = 0
+    else:       
+        agent.IncomeLv1 = aggregatedLv1['IncomeLv1'] * agent.Agent2rdPerc  
+          
     # 二级下线贡献佣金
+    aggregatedLv2 = AliOrd.objects.filter(Up2lineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv2=Sum('SettleAmt'))
+    if aggregatedLv2['IncomeLv2'] == None:
+        agent.IncomeLv2 = 0
+    else:       
+        agent.IncomeLv2 = aggregatedLv2['IncomeLv2'] * agent.Agent3rdPerc    
     
+    # 总佣金
+    agent.IncomeTotal = agent.IncomeSelf + agent.IncomeLv1 + agent.IncomeLv2
+              
