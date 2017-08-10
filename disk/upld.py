@@ -9,7 +9,7 @@ import csv
     # django.setup()
 
 #from arrears.models import D072Qf 
-from disk.models import AliOrd
+from disk.models import AliOrd,Agent
 from django.shortcuts import render,render_to_response
 from django import forms
 from django.http import HttpResponse
@@ -87,7 +87,11 @@ def upld(request):
             return HttpResponse('upload ok!')
         
     elif (request.method == "POST") and ('upload_agent' in request.POST):   
+#         uf = UserForm()
+#         order_list = []
+#         agent_file = UserForm() 
         UploadAgent(request)
+        return HttpResponse('upload ok!')
         
     else:
         uf = UserForm()
@@ -120,9 +124,6 @@ def UploadAgent(request):
         fname = request.FILES['file'].temporary_file_path()
         with open(fname, 'r') as f:
             reader = csv.reader(f)
-                
-                #print u"读取文件结束,开始导入!"
-            time1 = time.time()
 
             WorkList = []            
             
@@ -130,19 +131,33 @@ def UploadAgent(request):
             for line in reader: 
                 line_num = line_num + 1
                 if (line_num != 1): 
-                    WorkList.append(AliOrd(CreatDate=line[0],
-                                            ClickDate=line[1],
-                                            CommType=line[2],
-                                            CommId=line[3],
-                                            WangWangId=line[4],
-                                            StoreId=line[5],
-                                            CommQty=line[6],
-                                            CommPrice=line[7],
-                                            PosID=line[28],
-                                            PosName=line[29]))
-           
-            #update_or_create           
-        AliConfig.objects.bulk_create(WorkList)
+                    Agent.objects.update_or_create(AgentId  = line[0],
+                                                   AgentName= line[1])
         
         return HttpResponse('upload ok!')
+
+
+# def UploadAgent(request):
+#     agent_file = UserForm(request.POST,request.FILES)
+#     
+#     if agent_file.is_valid():
+#         # 打开文件
+#         #f = request.FILES['file']
+#         fname = request.FILES['file'].temporary_file_path()
+#         with open(fname, 'r') as f:
+#             reader = csv.reader(f)
+# 
+#             WorkList = []            
+#             
+#             line_num = 0
+#             for line in reader: 
+#                 line_num = line_num + 1
+#                 if (line_num != 1): 
+#                     WorkList.append(Agent(AgentId =line[0],
+#                                           AgentName=line[1]))
+#            
+#          
+#         Agent.objects.bulk_create(WorkList)
+#         
+#         return HttpResponse('upload ok!')
     
