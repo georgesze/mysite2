@@ -9,7 +9,7 @@ import csv
     # django.setup()
 
 #from arrears.models import D072Qf 
-from disk.models import AliOrd,Agent
+from disk.models import AliOrd,Agent,AliConfig
 from django.shortcuts import render,render_to_response
 from django import forms
 from django.http import HttpResponse
@@ -92,7 +92,11 @@ def upld(request):
 #         agent_file = UserForm() 
         UploadAgent(request)
         return HttpResponse('upload ok!')
-        
+    
+    elif (request.method == "POST") and ('delete_order' in request.POST):   
+            
+        AliOrd.objects.all().delete()    
+        return HttpResponse('所有订单已删除')            
     else:
         uf = UserForm()
         agent_file = UserForm()
@@ -133,7 +137,14 @@ def UploadAgent(request):
                 if (line_num != 1): 
                     Agent.objects.update_or_create(AgentId  = line[0],
                                                    AgentName= line[1])
-        
+                    
+                    
+                    AliConfig.objects.update_or_create(AgentId  = line[0],
+                                                       AgentUpId= line[5],
+                                                       AgentPerc = line[6],
+                                                       Agent2rdPerc = line[7],
+                                                       Agent3rdPerc = float(line[8]))
+                    
         return HttpResponse('upload ok!')
 
 

@@ -14,6 +14,12 @@
 	{{uf}}
 	<input type="submit" value="上传到数据库" name="upload_order"/>
 </form>
+	
+<h1>代理订单删除，谨慎操作！！！！</h1>
+<form method="post">
+	{% csrf_token %}
+	<input type="submit" value="删除所有订单" name="delete_order"/>
+</form>
 
 <h1>代理信息上传</h1>
 	<form action="" method="post" enctype="multipart/form-data" >
