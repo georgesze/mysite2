@@ -5,7 +5,7 @@ import csv
 
 #import django
 
-# if django.VERSION >= (1, 7):#自动判断版本
+# if django.VERSION >= (1, 7):#自动判断版本222
     # django.setup()
 
 #from arrears.models import D072Qf 
