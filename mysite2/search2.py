@@ -108,14 +108,15 @@ def CalculateAgentOrder(agent,start,end):
     orders = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end))
                
     for order_item in orders:  
-        #取得上线信息
-        order_item.UplineId = str(agent.AgentUpId.AgentId)        #上线ID
-        
         # 计算佣金分成 ---- 计算使用SettleAmt结算金额 ----
         #计算个人所得佣金    
         order_item.IncomePercSelf = agent.AgentPerc             #自获佣金比例
-        order_item.IncomeSelf = order_item.SettleAmt * agent.AgentPerc    #自获佣金        
-        
+        order_item.IncomeSelf = order_item.SettleAmt * agent.AgentPerc    #自获佣金               
+               
+        #取得上线信息
+        if not agent.AgentUpId == None:
+            order_item.UplineId = str(agent.AgentUpId.AgentId)        #上线ID
+         
         #计算上线分成佣金
         if not order_item.UplineId =='':
             order_item.UplineName = str(agent.AgentUpId.AgentName)       #上线名称
