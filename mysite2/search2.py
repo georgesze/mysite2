@@ -118,18 +118,18 @@ def CalculateAgentOrder(agent,start,end):
             order_item.UplineId = str(agent.AgentUpId.AgentId)        #上线ID
          
         #计算上线分成佣金
-        if not order_item.UplineId =='':
-            order_item.UplineName = str(agent.AgentUpId.AgentName)       #上线名称
-            order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
-            order_item.ShareUp1 = order_item.SettleAmt * agent.Agent2rdPerc       #贡献上级佣金
+            if not order_item.UplineId =='':
+                order_item.UplineName = str(agent.AgentUpId.AgentName)       #上线名称
+                order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
+                order_item.ShareUp1 = order_item.SettleAmt * agent.Agent2rdPerc       #贡献上级佣金
         
         #计算上上线分成佣金
-        order_item.Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)    #上上线ID
+            order_item.Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)    #上上线ID
         
-        if not order_item.Up2lineId =='':   
-            order_item.Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName    #上上线名称   
-            order_item.SharePercUp2 = agent.Agent3rdPerc                        #贡献上上级佣金比例
-            order_item.ShareUp2 = order_item.SettleAmt * agent.Agent3rdPerc     #贡献上上级佣金
+            if not order_item.Up2lineId =='':   
+                order_item.Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName    #上上线名称   
+                order_item.SharePercUp2 = agent.Agent3rdPerc                        #贡献上上级佣金比例
+                order_item.ShareUp2 = order_item.SettleAmt * agent.Agent3rdPerc     #贡献上上级佣金
         
         #保存计算结果
         order_item.save()
