@@ -15,6 +15,8 @@ from django import forms
 from django.http import HttpResponse
 from django.core.files import File
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.core.exceptions import ObjectDoesNotExist
+
 
 import time
 import random
@@ -125,27 +127,64 @@ def UploadAgent(request):
     if agent_file.is_valid():
         # 打开文件
         #f = request.FILES['file']
+        # add agent entry
         fname = request.FILES['file'].temporary_file_path()
         with open(fname, 'r') as f:
-            reader = csv.reader(f)
-
-            WorkList = []            
+            reader = csv.reader(f)          
             
             line_num = 0
             for line in reader: 
                 line_num = line_num + 1
                 if (line_num != 1): 
-                    Agent.objects.update_or_create(AgentId  = line[0],
-                                                   AgentName= line[1])
+                    # add agent entry
+                    Agent.objects.get_or_create(AgentId  = line[0],
+                                                AgentName= line[1])
                     
+        # add aliconfig entry            
+        fname = request.FILES['file'].temporary_file_path()
+        with open(fname, 'r') as f:
+            reader = csv.reader(f)                    
+            
+            WorkList = []
+            ls_error= []
+            ls_count_succ = 0
                     
-                    AliConfig.objects.update_or_create(AgentId  = line[0],
-                                                       AgentUpId= line[5],
-                                                       AgentPerc = line[6],
-                                                       Agent2rdPerc = line[7],
-                                                       Agent3rdPerc = float(line[8]))
-                    
-        return HttpResponse('upload ok!')
+            line_num = 0
+            for line in reader: 
+                line_num = line_num + 1
+                
+                if (line_num != 1):   # skip the first line
+                    try:
+                        obj_AgentId   = None
+                        obj_AgentUpId = None
+                        #get object 
+                        obj_AgentId = Agent.objects.get(AgentId=line[0])
+                        obj_AgentUpId = Agent.objects.get(AgentId=line[5])
+                    except ObjectDoesNotExist:
+                        ls_error.append(line[0])
+                            
+                    if not obj_AgentId == None:                                                        
+                        WorkList.append(AliConfig(AgentId=obj_AgentId,
+                                        AgentUpId=obj_AgentUpId,
+                                        AgentPerc = line[6],
+                                        Agent2rdPerc = line[7],
+                                        Agent3rdPerc = line[8],
+                                        Slug = line[0]))
+                        ls_count_succ = ls_count_succ + 1
+        AliConfig.objects.bulk_create(WorkList)                                           
+                                                               
+#                    AliConfig.objects.get_or_create(AgentId   = obj_AgentId,
+#                                                    AgentUpId = obj_AgentUpId)
+#                                                        AgentPerc = line[6],
+#                                                        Agent2rdPerc = line[7],
+#                                                        Agent3rdPerc = line[8])                 
+        return HttpResponse('成功更新')
+
+
+
+
+
+
 
 
 # def UploadAgent(request):

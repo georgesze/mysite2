@@ -5,7 +5,9 @@ from disk.models import AliOrd,AliConfig,Agent
 
 # Add in this class to customized the Admin Interface
 class AliConfigAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'Slug':('AgentId',)}
+    None
+    # prepopulated_fields doesn¡¯t accept DateTimeField, ForeignKey, OneToOneField, and ManyToManyField fields.
+    #prepopulated_fields = {'Slug': ('AgentId',)}
 
 
 admin.site.register(AliOrd)
