@@ -123,13 +123,16 @@ def CalculateAgentOrder(agent,start,end):
                 order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
                 order_item.ShareUp1 = order_item.SettleAmt * agent.Agent2rdPerc       #贡献上级佣金
         
-        #计算上上线分成佣金
-            order_item.Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)    #上上线ID
+            if not agent.AgentUpId.AId.AgentUpId == None:
+                
         
-            if not order_item.Up2lineId =='':   
-                order_item.Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName    #上上线名称   
-                order_item.SharePercUp2 = agent.Agent3rdPerc                        #贡献上上级佣金比例
-                order_item.ShareUp2 = order_item.SettleAmt * agent.Agent3rdPerc     #贡献上上级佣金
+                 #计算上上线分成佣金
+                order_item.Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)    #上上线ID
+        
+                if not order_item.Up2lineId =='':   
+                    order_item.Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName    #上上线名称   
+                    order_item.SharePercUp2 = agent.Agent3rdPerc                        #贡献上上级佣金比例
+                    order_item.ShareUp2 = order_item.SettleAmt * agent.Agent3rdPerc     #贡献上上级佣金
         
         #保存计算结果
         order_item.save()
