@@ -20,7 +20,7 @@ def AgentList(request):
     agent_list = AliConfig.objects.all()
     Incometotal = 0
       
-    if request.method == "POST":
+    if (request.method == "POST") and ('calculate_income' in request.POST):
         form = SearchForm(request.POST)
         if form.is_valid():
             start = form.cleaned_data.get('period_str')
@@ -42,13 +42,41 @@ def AgentList(request):
             #取到期间总金额 from upload
             aggregated = AliOrd.objects.filter(SettleDate__range=(start, end)).aggregate(total=Sum('SettleAmt'))      
             Incometotal = aggregated['total']
-                
-            
+                            
             # 遍历所有 代理 计算
             for agent in agent_list:
                 # 计算所有订单佣金 volume 2000+
                 CalculateAgentOrder(agent,start,end)
                 
+                # 计算收入 个人订单收入 + 一级下线贡献佣金 + 二级下线贡献佣金
+                CalculateIncome(agent,start,end)
+                
+    
+    elif (request.method == "POST") and ('display_income' in request.POST):
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            start = form.cleaned_data.get('period_str')
+            request.session['start'] = str(start)
+            
+            end = form.cleaned_data.get('period_end')
+            request.session['end'] = str(end)
+            
+            #html request 不支持python date格式，需要转换 ????
+            start = request.session.get('start')
+            end = request.session.get('end')
+            start = datetime.datetime.strptime(start, "%Y-%m-%d").date()
+            end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
+
+            #取到所有代理列表            
+            #agent_list = AliConfig.objects.filter()
+            agent_list = AliConfig.objects.all()
+            
+            #取到期间总金额 from upload CSV file
+            aggregated = AliOrd.objects.filter(SettleDate__range=(start, end)).aggregate(total=Sum('SettleAmt'))      
+            Incometotal = aggregated['total']        
+            
+            # 遍历所有 代理 计算
+            for agent in agent_list:
                 # 计算收入 个人订单收入 + 一级下线贡献佣金 + 二级下线贡献佣金
                 CalculateIncome(agent,start,end)
                 

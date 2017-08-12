@@ -8,8 +8,9 @@
     <form action="/payslip/" method="post">
   			{% csrf_token %}
   			{{ form_period.as_p }}
-<!--      		计算月份：<input type="month" name="sel_period"> -->
-  			<input type="submit" value="计算当月佣金">
+<!--      		计算月份：<input type="month" name="sel_period"> -->  			
+  			<input type="submit" value="显示当前期间佣金" name="display_income">
+  			<input type="submit" value="重新计算当前期间佣金" name="calculate_income"/>
     </form>
 
 <h1>收入统计结果：</h1>
