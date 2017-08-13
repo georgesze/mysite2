@@ -1,12 +1,9 @@
-#coding:utf-8
- 
+#coding:utf-8 
 from django.shortcuts import render
 from django.views.decorators import csrf
 from django.db.models import Count, Min, Sum, Avg
 from disk.models import AliConfig,AliOrd
 from django import forms
-
-import datetime
 
 class SearchForm(forms.Form):
     #title = forms.CharField(max_length=50)
@@ -147,7 +144,7 @@ def CalculateAgentOrder(agent,start,end):
          
         #计算上线分成佣金
             if not order_item.UplineId =='':
-                order_item.UplineName = str(agent.AgentUpId.AgentName)       #上线名称
+                order_item.UplineName = agent.AgentUpId.AgentName       #上线名称
                 order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
                 order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金
         
