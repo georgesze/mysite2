@@ -5,6 +5,9 @@ from django.db.models import Count, Min, Sum, Avg
 from disk.models import AliConfig,AliOrd
 from django import forms
 
+import datetime
+
+
 class SearchForm(forms.Form):
     #title = forms.CharField(max_length=50)
     period_str = forms.DateField(initial=datetime.date(2017, 6, 1),widget=forms.SelectDateWidget())
