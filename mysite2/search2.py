@@ -40,7 +40,7 @@ def AgentList(request):
             agent_list = AliConfig.objects.all()
             
             #取到期间总金额 from upload
-            aggregated = AliOrd.objects.filter(SettleDate__range=(start, end)).aggregate(total=Sum('SettleAmt'))      
+            aggregated = AliOrd.objects.filter(SettleDate__range=(start, end)).aggregate(total=Sum('RebateAmt'))      
             Incometotal = aggregated['total']
                             
             # 遍历所有 代理 计算
@@ -72,7 +72,7 @@ def AgentList(request):
             agent_list = AliConfig.objects.all()
             
             #取到期间总金额 from upload CSV file
-            aggregated = AliOrd.objects.filter(SettleDate__range=(start, end)).aggregate(total=Sum('SettleAmt'))      
+            aggregated = AliOrd.objects.filter(SettleDate__range=(start, end)).aggregate(total=Sum('RebateAmt'))      
             Incometotal = aggregated['total']        
             
             # 遍历所有 代理 计算
@@ -136,10 +136,10 @@ def CalculateAgentOrder(agent,start,end):
     orders = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end))
                
     for order_item in orders:  
-        # 计算佣金分成 ---- 计算使用SettleAmt结算金额 ----
+        # 计算佣金分成 ---- 计算使用RebateAmt结算金额 ----
         #计算个人所得佣金    
         order_item.IncomePercSelf = agent.AgentPerc             #自获佣金比例
-        order_item.IncomeSelf = order_item.SettleAmt * agent.AgentPerc    #自获佣金               
+        order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金               
                
         #取得上线信息
         if not agent.AgentUpId == None:
@@ -149,7 +149,7 @@ def CalculateAgentOrder(agent,start,end):
             if not order_item.UplineId =='':
                 order_item.UplineName = str(agent.AgentUpId.AgentName)       #上线名称
                 order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
-                order_item.ShareUp1 = order_item.SettleAmt * agent.Agent2rdPerc       #贡献上级佣金
+                order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金
         
             if not agent.AgentUpId.AId.AgentUpId == None:
                 
@@ -160,7 +160,7 @@ def CalculateAgentOrder(agent,start,end):
                 if not order_item.Up2lineId =='':   
                     order_item.Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName    #上上线名称   
                     order_item.SharePercUp2 = agent.Agent3rdPerc                        #贡献上上级佣金比例
-                    order_item.ShareUp2 = order_item.SettleAmt * agent.Agent3rdPerc     #贡献上上级佣金
+                    order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金
         
         #保存计算结果
         order_item.save()
@@ -171,21 +171,21 @@ def CalculateIncome(agent,start,end):
     agent_pid = agent.AgentId.AgentId   
     
     #个人订单收入
-    aggregated1 = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).aggregate(Income=Sum('SettleAmt'))
+    aggregated1 = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).aggregate(Income=Sum('RebateAmt'))
     if aggregated1['Income'] == None:
         agent.IncomeSelf = 0
     else:       
         agent.IncomeSelf = aggregated1['Income'] * agent.AgentPerc
 
     #一级下线贡献佣金   
-    aggregatedLv1 = AliOrd.objects.filter(UplineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv1=Sum('SettleAmt'))
+    aggregatedLv1 = AliOrd.objects.filter(UplineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv1=Sum('RebateAmt'))
     if aggregatedLv1['IncomeLv1'] == None:
         agent.IncomeLv1 = 0
     else:       
         agent.IncomeLv1 = aggregatedLv1['IncomeLv1'] * agent.Agent2rdPerc  
           
     # 二级下线贡献佣金
-    aggregatedLv2 = AliOrd.objects.filter(Up2lineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv2=Sum('SettleAmt'))
+    aggregatedLv2 = AliOrd.objects.filter(Up2lineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv2=Sum('RebateAmt'))
     if aggregatedLv2['IncomeLv2'] == None:
         agent.IncomeLv2 = 0
     else:       
