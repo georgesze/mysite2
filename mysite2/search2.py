@@ -48,10 +48,18 @@ def AgentList(request):
                 # 计算所有订单佣金 volume 2000+
                 CalculateAgentOrder(agent,start,end)
                 
+                
+            orders = AliOrd.objects.filter(SettleDate__range=(start, end))    
+            for order_item in orders:
+                order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金 
+                order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金 
+                order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金  
+                order_item.save()
+            
+            for agent in agent_list:
                 # 计算收入 个人订单收入 + 一级下线贡献佣金 + 二级下线贡献佣金
                 CalculateIncome(agent,start,end)
-                
-    
+            
     elif (request.method == "POST") and ('display_income' in request.POST):
         form = SearchForm(request.POST)
         if form.is_valid():
@@ -134,37 +142,69 @@ def AgentDetail(request, agent_name_slug):
 def CalculateAgentOrder(agent,start,end):
     agent_pid = agent.AgentId.AgentId
     orders = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end))
-               
-    for order_item in orders:  
-        # 计算佣金分成 ---- 计算使用RebateAmt结算金额 ----
-        #计算个人所得佣金    
-        order_item.IncomePercSelf = agent.AgentPerc             #自获佣金比例
-        order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金               
-               
-        #取得上线信息
-        if not agent.AgentUpId == None:
-            order_item.UplineId = str(agent.AgentUpId.AgentId)        #上线ID
-         
-        #计算上线分成佣金
-            if not order_item.UplineId =='':
-                order_item.UplineName = agent.AgentUpId.AgentName       #上线名称
-                order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
-                order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金
+    
+    l_UplineId = None
+    l_UplineName = None
+    l_Up2lineId = None
+    l_Up2lineName = None
+    
+    if not agent.AgentUpId == None:    
+        l_UplineId = str(agent.AgentUpId.AgentId)        #上线ID
+        l_UplineName = agent.AgentUpId.AgentName         #上线名称
         
-            if not agent.AgentUpId.AId.AgentUpId == None:
-                
+
+        if not agent.AgentUpId.AId.AgentUpId == None:
+            l_Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)    #上上线ID
+            l_Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName     #上上线名称  
+
+    AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end)).update(UplineId=l_UplineId,
+                                                                                 UplineName=l_UplineName,
+                                                                                 Up2lineId=l_Up2lineId,
+                                                                                 Up2lineName=l_Up2lineName,
+                                                                                 IncomePercSelf = agent.AgentPerc,
+                                                                                 SharePercUp1 = agent.Agent2rdPerc,
+                                                                                 SharePercUp2 = agent.Agent3rdPerc)        
+
+    
+#     for order_item in orders:
+#         order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金 
+#         order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金 
+#         order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金  
+#         order_item.save()
         
-                 #计算上上线分成佣金
-                order_item.Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)    #上上线ID
         
-                if not order_item.Up2lineId =='':   
-                    order_item.Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName    #上上线名称   
-                    order_item.SharePercUp2 = agent.Agent3rdPerc                        #贡献上上级佣金比例
-                    order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金
-        
-        #保存计算结果
-        order_item.save()
-        
+################################################################### old code               
+#     for order_item in orders:  
+#         # 计算佣金分成 ---- 计算使用RebateAmt结算金额 ----
+#         #计算个人所得佣金    
+#         order_item.IncomePercSelf = agent.AgentPerc             #自获佣金比例
+#         order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金               
+#                
+#         #取得上线信息
+#         if not agent.AgentUpId == None:
+#             order_item.UplineId = str(agent.AgentUpId.AgentId)        #上线ID
+#          
+#         #计算上线分成佣金
+#             if not order_item.UplineId =='':
+#                 order_item.UplineName = agent.AgentUpId.AgentName       #上线名称
+#                 order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
+#                 order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金
+#         
+#             if not agent.AgentUpId.AId.AgentUpId == None:
+#                 
+#         
+#                  #计算上上线分成佣金
+#                 order_item.Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)    #上上线ID
+#         
+#                 if not order_item.Up2lineId =='':   
+#                     order_item.Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName    #上上线名称   
+#                     order_item.SharePercUp2 = agent.Agent3rdPerc                        #贡献上上级佣金比例
+#                     order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金
+#         
+#         #保存计算结果
+#         order_item.save()
+    
+    
         
         
 def CalculateIncome(agent,start,end):
