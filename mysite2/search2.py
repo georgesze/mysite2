@@ -82,14 +82,14 @@ def AgentList(request):
                 
     else:
         form = SearchForm()
-     
-    # context must be dict type rather than query set
-#    return render(request, "payslip.html", agent_dict)
+   
+    aggregated = AliConfig.objects.all().aggregate(total=Sum('IncomeTotal'))      
+    CollectSum = aggregated['total']   
+         
     return render(request, "payslip.html", {'form_agent':agent_list,
                                             'form_period':form,
-                                            'Incometotal':Incometotal})
-
-
+                                            'Incometotal':Incometotal,
+                                            'CollectSum':CollectSum})
 
 def AgentDetail(request, agent_name_slug):
     # Create a context dictionary which we can pass to the template rendering engine.
@@ -193,4 +193,9 @@ def CalculateIncome(agent,start,end):
     
     # 总佣金
     agent.IncomeTotal = agent.IncomeSelf + agent.IncomeLv1 + agent.IncomeLv2
+    
+    #保存计算结果
+    agent.save()
+    
+    
               

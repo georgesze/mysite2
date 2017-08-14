@@ -82,9 +82,11 @@ class AliConfig(models.Model):
     Active = models.BooleanField(verbose_name='激活状态', default=False, blank=True)
     ValidBegin = models.DateField(verbose_name='有效期开始时间', blank=True, null=True)
     ValidEnd = models.DateField(verbose_name='有效期结束时间', blank=True, null=True)
-#    IncomeSelf = models.DecimalField(max_digits= 8, decimal_places=2, verbose_name='自获佣金额', blank=True,null=True)
-#    IncomeLv1 = models.DecimalField(max_digits= 8, decimal_places=2, verbose_name='下级贡献佣金', blank=True,null=True)
-#    IncomeLv2 = models.DecimalField(max_digits= 8, decimal_places=2, verbose_name='二级贡献佣金', blank=True,null=True)
+    IncomeSelf = models.DecimalField(max_digits= 8, decimal_places=2, verbose_name='自获佣金额', blank=True,null=True)
+    IncomeLv1 = models.DecimalField(max_digits= 8, decimal_places=2, verbose_name='下级贡献佣金', blank=True,null=True)
+    IncomeLv2 = models.DecimalField(max_digits= 8, decimal_places=2, verbose_name='二级贡献佣金', blank=True,null=True)
+    IncomeTotal = models.DecimalField(max_digits= 8, decimal_places=2, verbose_name='总佣金', blank=True,null=True)
+    CalculateStatus = models.CharField(max_length = 10, verbose_name='计算状态', default='', blank=True)
     Slug = models.SlugField(blank=True, null=True)
     
     def save(self, *args, **kwargs):

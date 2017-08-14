@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>买买买分享网</title>
+
 </head>
 <body>
     <form action="/payslip/" method="post">
@@ -28,13 +29,12 @@
 		<th>一级下线贡献佣金</th>
 		<th>二级下线贡献佣金</th>
 		<th>总佣金</th>
+		<th>计算状态</th>
 		<th>明细链接</th>
 		</tr>
-        {% if form_agent %}
-
-                {% for AliConfig in form_agent %}
+        {% if form_agent %}				
+                {% for AliConfig in form_agent %}    
 				<tr>	
-                
                 <td align="right">{{ AliConfig.AgentId.AgentId }}</td>
 				<td align="right">{{ AliConfig.AgentId.AgentName }}</td>
 				<td align="right">{{ AliConfig.AgentUpId.AgentId }}</td>
@@ -45,13 +45,17 @@
 				<td align="right">{{ AliConfig.IncomeSelf }}</td>	
 				<td align="right">{{ AliConfig.IncomeLv1 }}</td>
 				<td align="right">{{ AliConfig.IncomeLv2 }}</td>
-				<td align="right">{{ AliConfig.IncomeTotal }}</td>
+				<td align="right" input type="text" >{{ AliConfig.IncomeTotal }}</td>
+				<td align="right">{{ AliConfig.CalculateStatus }}</td>
 				<td align="right"><a href="/payslip/{{ AliConfig.Slug }}">点我查看明细</a></td>
-				</tr>
-                	
-
+					
+				</tr>			
                 {% endfor %}
-
+        <tr>
+            <td colspan=2 style="text-align:right;">合计</td>
+            <td colspan=8 ></td>
+            <td align="right" id="sum">{{ CollectSum }}</td>
+        </tr>
         {% else %}
             <strong>There are no Agent present.</strong>
         {% endif %}
