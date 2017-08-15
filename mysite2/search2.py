@@ -4,6 +4,7 @@ from django.views.decorators import csrf
 from django.db.models import Count, Min, Sum, Avg
 from disk.models import AliConfig,AliOrd
 from django import forms
+from django.db import transaction
 
 import datetime
 
@@ -46,17 +47,10 @@ def AgentList(request):
             # 遍历所有 代理 计算
             for agent in agent_list:
                 # 计算所有订单佣金 volume 2000+
-                CalculateAgentOrder(agent,start,end)
+                CalculateOrderAgent(agent,start,end)
                 
-                
-            orders = AliOrd.objects.filter(SettleDate__range=(start, end))    
-            for order_item in orders:
-                order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金 
-                order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金 
-                order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金  
-                order_item.save()
+                CalculateOrderAmount(agent,start,end)
             
-            for agent in agent_list:
                 # 计算收入 个人订单收入 + 一级下线贡献佣金 + 二级下线贡献佣金
                 CalculateIncome(agent,start,end)
             
@@ -139,7 +133,7 @@ def AgentDetail(request, agent_name_slug):
     return render(request, 'order.html', context_dict)
 
 
-def CalculateAgentOrder(agent,start,end):
+def CalculateOrderAgent(agent,start,end):
     agent_pid = agent.AgentId.AgentId
     orders = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end))
     
@@ -164,6 +158,34 @@ def CalculateAgentOrder(agent,start,end):
                                                                                  IncomePercSelf = agent.AgentPerc,
                                                                                  SharePercUp1 = agent.Agent2rdPerc,
                                                                                  SharePercUp2 = agent.Agent3rdPerc)        
+
+def CalculateOrderAmount(agent,start,end):
+    orders = AliOrd.objects.filter(SettleDate__range=(start, end))    
+    for order_item in orders:
+        update_flag = False
+                
+        l_temp = round(order_item.RebateAmt * agent.AgentPerc,2)
+        if not order_item.IncomeSelf == l_temp:
+            update_flag = True
+            order_item.IncomeSelf = l_temp    
+                
+        l_temp = round(order_item.RebateAmt * agent.Agent2rdPerc,2)
+        if not order_item.ShareUp1 == l_temp:
+            update_flag = True
+            order_item.ShareUp1 = l_temp                     
+                    
+        l_temp = round(order_item.RebateAmt * agent.Agent3rdPerc,2)
+        if not order_item.ShareUp2 == l_temp:
+            update_flag = True
+            order_item.ShareUp2 = l_temp 
+                                  
+#                 order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金 
+#                 order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金 
+#                 order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金  
+        if update_flag == True:
+            order_item.save(update_fields=['IncomeSelf','ShareUp1','ShareUp2'])
+                    
+    transaction.commit()
 
     
 #     for order_item in orders:
