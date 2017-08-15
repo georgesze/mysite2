@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from django.core.files import File
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.db import transaction
 
 import time
 import random
@@ -26,7 +26,9 @@ class UserForm(forms.Form):
     #title = forms.CharField(max_length=50)
     file = forms.FileField()
 
+@transaction.atomic
 def upld(request): 
+    x = y = 0
     if (request.method == "POST") and ('upload_order' in request.POST):
         uf = UserForm(request.POST,request.FILES)
         if uf.is_valid():
@@ -45,9 +47,16 @@ def upld(request):
                 WorkList = []            
             
                 line_num = 0
+                x = y = 0
                 for line in reader: 
                     line_num = line_num + 1
                     if (line_num != 1): 
+                        if AliOrd.objects.filter(OrderId=line[24]).exists():
+                            x = x + 1
+                            AliOrd.objects.filter(OrderId=line[24]).delete()
+                        else:
+                            y = y + 1
+                        
                         WorkList.append(AliOrd(CreatDate=line[0],
                                                ClickDate=line[1],
                                                CommType=line[2],
@@ -85,8 +94,10 @@ def upld(request):
             #update_or_create           
             AliOrd.objects.bulk_create(WorkList)
             time3 = time.time()
+            order_list = []
+            agent_file = UserForm()
             								
-            return HttpResponse('upload ok!')
+            #return HttpResponse('upload ok!')
         
     elif (request.method == "POST") and ('upload_agent' in request.POST):   
 #         uf = UserForm()
@@ -105,6 +116,8 @@ def upld(request):
         #Person.objects.filter(age__gt=18).values_list()#括号可以指定需要的字段，一般使用这种方法。
         order_list = AliOrd.objects.all()
     return render(request, 'upld.html', {'uf':uf,
+                                         'upd_unm':x,
+                                         'new_unm':y,
                                          'order_list':order_list,
                                          'agent_file':agent_file})
 

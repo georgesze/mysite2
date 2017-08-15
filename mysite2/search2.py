@@ -27,7 +27,7 @@ def AgentList(request):
             start = form.cleaned_data.get('period_str')
             request.session['start'] = str(start)
             
-            end = form.cleaned_data.get('period_end')
+            end = form.cleaned_data.get('period_end') + datetime.timedelta(days=1)
             request.session['end'] = str(end)
             
             #html request 不支持python date格式，需要转换 ????
@@ -60,7 +60,7 @@ def AgentList(request):
             start = form.cleaned_data.get('period_str')
             request.session['start'] = str(start)
             
-            end = form.cleaned_data.get('period_end')
+            end = form.cleaned_data.get('period_end') + datetime.timedelta(days=1)
             request.session['end'] = str(end)
             
             #html request 不支持python date格式，需要转换 ????
@@ -158,9 +158,13 @@ def CalculateOrderAgent(agent,start,end):
                                                                                  IncomePercSelf = agent.AgentPerc,
                                                                                  SharePercUp1 = agent.Agent2rdPerc,
                                                                                  SharePercUp2 = agent.Agent3rdPerc)        
-
+    
+@transaction.atomic
 def CalculateOrderAmount(agent,start,end):
-    orders = AliOrd.objects.filter(SettleDate__range=(start, end))    
+    # get aggent orders
+    agent_pid = agent.AgentId.AgentId
+    orders = AliOrd.objects.filter(PosID=agent_pid,SettleDate__range=(start, end))    
+    
     for order_item in orders:
         update_flag = False
                 
@@ -185,7 +189,7 @@ def CalculateOrderAmount(agent,start,end):
         if update_flag == True:
             order_item.save(update_fields=['IncomeSelf','ShareUp1','ShareUp2'])
                     
-    transaction.commit()
+#    transaction.commit()
 
     
 #     for order_item in orders:
