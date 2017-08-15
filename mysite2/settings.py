@@ -25,7 +25,7 @@ SECRET_KEY = '!^*&7^!y&g880pig=fkupher&xfe6dm9uysm*9!6&6to6@b7@7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*.pythonanywhere.com','george666.pythonanywhere.com','127.0.0.1','13.124.193.111','*.pythonanywhere.cn']
+ALLOWED_HOSTS = ['*.pythonanywhere.com','george666.pythonanywhere.com','127.0.0.1','13.124.193.111','www.pythonanywhere.cn']
 
 FILE_UPLOAD_HANDLERS = [ 
     'django.core.files.uploadhandler.TemporaryFileUploadHandler', 
