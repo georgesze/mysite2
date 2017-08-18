@@ -11,8 +11,8 @@ import datetime
 
 class SearchForm(forms.Form):
     #title = forms.CharField(max_length=50)
-    period_str = forms.DateField(initial=datetime.date(2017, 6, 1),widget=forms.SelectDateWidget())
-    period_end = forms.DateField(initial=datetime.date(2017, 6, 30),widget=forms.SelectDateWidget())
+    period_str = forms.DateField(initial=datetime.date(2017, 7, 1),widget=forms.SelectDateWidget())
+    period_end = forms.DateField(initial=datetime.date(2017, 7, 31),widget=forms.SelectDateWidget())
 
    
 # 接收POST请求数据
