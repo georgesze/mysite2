@@ -98,32 +98,32 @@ def AgentDetail(request, agent_name_slug):
     context_dict = {}
 
     try:
-        # Can we find a order name slug with the given name?
-        # If we can't, the .get() method raises a DoesNotExist exception.
-        # So the .get() method returns one model instance or raises an exception.
         current_agent = AliConfig.objects.get(Slug=agent_name_slug)
         context_dict['agent_name'] = current_agent.AgentId.AgentName + current_agent.AgentId.AgentId
 
-        # Retrieve all of the associated pages.
-        # Note that filter returns >= 1 model instance.
         start = request.session.get('start')
         end = request.session.get('end')
         
         start = datetime.datetime.strptime(start, "%Y-%m-%d").date()
         end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
         
+        # 1.当前代理佣金明细
         # settle date 订单结算时间
         agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,SettleDate__range=(start, end))
         #agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,CreatDate__contains=datetime.date(2017,5,15))   CreatDate__contains=end
-        
         #agent_orders = AliOrd.objects.all()
         
-
-        # Adds our results list to the template context under name pages.
         context_dict['agent_orders'] = agent_orders
-        # We also add the order object from the database to the context dictionary.
-        # We'll use this in the template to verify that the order exists.
         context_dict['current_agent'] = current_agent
+        
+        # 2.所有下线佣金明细
+        agent_orders_2 = AliOrd.objects.filter(UplineId=current_agent.AgentId.AgentId,SettleDate__range=(start, end))
+        context_dict['agent_orders_2'] = agent_orders_2
+        
+        # 3.所有下下线佣金明细
+        agent_orders_3 = AliOrd.objects.filter(Up2lineId=current_agent.AgentId.AgentId,SettleDate__range=(start, end))       
+        context_dict['agent_orders_3'] = agent_orders_3
+        
     except AliConfig.DoesNotExist:
         # We get here if we didn't find the specified order.
         # Don't do anything - the template displays the "no order" message for us.

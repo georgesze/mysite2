@@ -2,26 +2,26 @@
 <html>
     <head>
     <meta charset="utf-8">
-        <title>Rango</title>
+        <title>代理所有订单</title>
     </head>
 
-    <body>
-        <h1>{{ agent_name }}</h1>    
+<body>
+<h1>当前代理所有订单： {{ agent_name }}</h1>    
   
         
-<table summary="AgentOrder" border="1" width="80%" align="left">
-	<tbody>
+<table summary="AgentOrder" border="1" width="60%">
+
 		<tr>
 		<th colspan="2">代理</th>
-		<th>淘宝订单号</th>
 		<th colspan="2">代理上线</th>
-		<th colspan="2">代理上上线</th>
-		<th>自获佣金比例</th>
-		<th>贡献上级佣金比例</th>
-		<th>贡献上上级佣金比例</th>
-		<th>自获佣金额</th>
-		<th>贡献上级佣金额</th>
-		<th>贡献上上级佣金额</th>
+		<th>淘宝订单号</th>
+<!-- 		<th>自获佣金比例</th> -->
+<!-- 		<th>贡献上级佣金比例</th> -->
+<!-- 		<th>贡献上上级佣金比例</th> -->
+		<th>订单付款金额</th>
+		<th>佣金金额</th>
+<!-- 		<th>贡献上级佣金额</th> -->
+<!-- 		<th>贡献上上级佣金额</th> -->
 		</tr>
 		{% if current_agent %}
 			{% if agent_orders %}
@@ -29,17 +29,16 @@
 				<tr>
 				<td align="right">{{ AliOrd.PosName }}</td>
 				<td align="right">{{ AliOrd.PosID }}</td>
-				<td align="right">{{ AliOrd.OrderId }}</td>
 				<td align="right">{{ AliOrd.UplineId }}</td>
 				<td align="right">{{ AliOrd.UplineName }}</td>
-				<td align="right">{{ AliOrd.Up2lineId }}</td>
-				<td align="right">{{ AliOrd.Up2lineName }}</td>
-				<td align="right">{{ AliOrd.IncomePercSelf}}</td>
-				<td align="right">{{ AliOrd.SharePercUp1 }}</td>
-				<td align="right">{{ AliOrd.SharePercUp2 }}</td>
+				<td align="right">{{ AliOrd.OrderId }}</td>			
+				<td align="right">{{ AliOrd.PayAmount }}</td>	
+<!-- 				<td align="right">{{ AliOrd.IncomePercSelf}}</td> -->
+<!-- 				<td align="right">{{ AliOrd.SharePercUp1 }}</td> -->
+<!-- 				<td align="right">{{ AliOrd.SharePercUp2 }}</td> -->
 				<td align="right">{{ AliOrd.IncomeSelf }}</td>
-				<td align="right">{{ AliOrd.ShareUp1 }}</td>
-				<td align="right">{{ AliOrd.ShareUp2 }}</td>
+<!-- 				<td align="right">{{ AliOrd.ShareUp1 }}</td> -->
+<!-- 				<td align="right">{{ AliOrd.ShareUp2 }}</td> -->
 				</tr>
 				{% endfor %}
             {% else %}
@@ -47,10 +46,59 @@
             {% endif %}
         {% else %}
             The specified agent {{ agent_name }} does not exist!
-        {% endif %}   		
-	</tbody>
-</table>          
-        
+        {% endif %}   		     
+</table>   
 
-    </body>
+<h1>所有一级下线订单</h1>
+<table border="1" width="60%">
+<tr>
+	<th colspan="2">代理</th>
+	<th colspan="2">代理上线</th>
+	<th>淘宝订单号</th>
+	<th>订单付款金额</th>
+	<th>佣金金额</th>
+</tr>
+
+<tr>
+{% for AliOrd in agent_orders_2 %}
+<tr>
+	<td align="right">{{ AliOrd.PosName }}</td>
+	<td align="right">{{ AliOrd.PosID }}</td>
+	<td align="right">{{ AliOrd.UplineId }}</td>
+	<td align="right">{{ AliOrd.UplineName }}</td>
+	<td align="right">{{ AliOrd.OrderId }}</td>		
+	<td align="right">{{ AliOrd.PayAmount }}</td>		
+    <td align="right">{{ AliOrd.ShareUp1 }}</td> 
+</tr>
+{% endfor %}
+</tr>
+</table>
+
+<h1>所有二级下线订单</h1>
+<table border="1" width="60%">
+<tr>
+	<th colspan="2">代理</th>
+	<th colspan="2">代理上线</th>
+	<th>淘宝订单号</th>
+	<th>订单付款金额</th>
+	<th>佣金金额</th>
+</tr>
+
+<tr>
+{% for AliOrd in agent_orders_3 %}
+<tr>
+	<td align="right">{{ AliOrd.PosName }}</td>
+	<td align="right">{{ AliOrd.PosID }}</td>
+	<td align="right">{{ AliOrd.UplineId }}</td>
+	<td align="right">{{ AliOrd.UplineName }}</td>
+	<td align="right">{{ AliOrd.OrderId }}</td>		
+	<td align="right">{{ AliOrd.PayAmount }}</td>		
+    <td align="right">{{ AliOrd.ShareUp1 }}</td> 
+</tr>
+{% endfor %}
+</tr>
+</table>
+
+
+</body>
 </html>
