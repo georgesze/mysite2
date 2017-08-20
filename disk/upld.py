@@ -21,6 +21,7 @@ from django.db import transaction
 import time
 import random
 from django.http.multipartparser import FILE
+from builtins import int
 
 class UserForm(forms.Form):
     #title = forms.CharField(max_length=50)
@@ -56,7 +57,6 @@ def upld(request):
                             AliOrd.objects.filter(OrderId=line[24]).delete()
                         else:
                             y = y + 1
-                        
                         WorkList.append(AliOrd(CreatDate=line[0],
                                                ClickDate=line[1],
                                                CommType=line[2],
@@ -81,7 +81,7 @@ def upld(request):
                                                AllowanceType=line[21],
                                                Platform=line[22],
                                                ThirdParty=line[23],
-                                               OrderId=line[24],
+                                               OrderId=int(line[24]),
                                                Category=line[25],
                                                MediaId=line[26],
                                                MediaName=line[27],

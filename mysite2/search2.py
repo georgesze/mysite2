@@ -173,12 +173,12 @@ def CalculateOrderAmount(agent,start,end):
             update_flag = True
             order_item.IncomeSelf = l_temp    
                 
-        l_temp = round(order_item.RebateAmt * agent.Agent2rdPerc,2)
+        l_temp = round(order_item.IncomeSelf * agent.Agent2rdPerc,2)
         if not order_item.ShareUp1 == l_temp:
             update_flag = True
             order_item.ShareUp1 = l_temp                     
                     
-        l_temp = round(order_item.RebateAmt * agent.Agent3rdPerc,2)
+        l_temp = round(order_item.IncomeSelf * agent.Agent3rdPerc,2)
         if not order_item.ShareUp2 == l_temp:
             update_flag = True
             order_item.ShareUp2 = l_temp 
@@ -244,18 +244,20 @@ def CalculateIncome(agent,start,end):
         agent.IncomeSelf = aggregated1['Income'] * agent.AgentPerc
 
     #一级下线贡献佣金   
-    aggregatedLv1 = AliOrd.objects.filter(UplineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv1=Sum('RebateAmt'))
+    aggregatedLv1 = AliOrd.objects.filter(UplineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv1=Sum('ShareUp1'))
     if aggregatedLv1['IncomeLv1'] == None:
         agent.IncomeLv1 = 0
     else:       
-        agent.IncomeLv1 = aggregatedLv1['IncomeLv1'] * agent.Agent2rdPerc  
+         agent.IncomeLv1 = aggregatedLv1['IncomeLv1']
+         #agent.IncomeLv1 = aggregatedLv1['IncomeLv1'] * agent.Agent2rdPerc  
           
     # 二级下线贡献佣金
-    aggregatedLv2 = AliOrd.objects.filter(Up2lineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv2=Sum('RebateAmt'))
+    aggregatedLv2 = AliOrd.objects.filter(Up2lineId=agent_pid,SettleDate__range=(start, end)).aggregate(IncomeLv2=Sum('ShareUp2'))
     if aggregatedLv2['IncomeLv2'] == None:
         agent.IncomeLv2 = 0
     else:       
-        agent.IncomeLv2 = aggregatedLv2['IncomeLv2'] * agent.Agent3rdPerc    
+        agent.IncomeLv2 = aggregatedLv2['IncomeLv2']  
+        #agent.IncomeLv2 = aggregatedLv2['IncomeLv2'] * agent.Agent3rdPerc  
     
     # 总佣金
     agent.IncomeTotal = agent.IncomeSelf + agent.IncomeLv1 + agent.IncomeLv2
