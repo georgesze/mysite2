@@ -9,36 +9,42 @@
 <h1>当前代理所有订单： {{ agent_name }}</h1>    
   
         
-<table summary="AgentOrder" border="1" width="60%">
+<table summary="AgentOrder" border="1">
 
 		<tr>
+		<th>淘宝订单号</th>
+		<th>订单创建时间</th>
+		<th>订单结算时间</th>
+		<th>商品信息</th>
+		<th>商品类目</th>
+		<th>商品数量</th>
+		<th>商品单价</th>
+		<th>订单状态</th>
+		<th>订单类型</th>
+		<th>付款金额</th>
 		<th colspan="2">代理</th>
 		<th colspan="2">代理上线</th>
-		<th>淘宝订单号</th>
-<!-- 		<th>自获佣金比例</th> -->
-<!-- 		<th>贡献上级佣金比例</th> -->
-<!-- 		<th>贡献上上级佣金比例</th> -->
-		<th>订单付款金额</th>
 		<th>佣金金额</th>
-<!-- 		<th>贡献上级佣金额</th> -->
-<!-- 		<th>贡献上上级佣金额</th> -->
 		</tr>
 		{% if current_agent %}
 			{% if agent_orders %}
 				{% for AliOrd in agent_orders %}
 				<tr>
-				<td align="right">{{ AliOrd.PosName }}</td>
+				<td align="right">{{ AliOrd.OrderId }}</td>
+				<td align="right" width="100">{{ AliOrd.CreatDate }}</td>
+				<td align="right" width="100">{{ AliOrd.SettleDate }}</td>
+				<td align="right" width="220">{{ AliOrd.CommType }}</td>
+				<td align="right">{{ AliOrd.Category }}</td>
+				<td align="right">{{ AliOrd.CommQty }}</td>
+				<td align="right">{{ AliOrd.CommPrice }}</td>
+				<td align="right">{{ AliOrd.OrdStatus }}</td>
+				<td align="right">{{ AliOrd.OrdType }}</td>
+				<td align="right">{{ AliOrd.PayAmount }}</td>		
 				<td align="right">{{ AliOrd.PosID }}</td>
+				<td align="right">{{ AliOrd.PosName }}</td>
 				<td align="right">{{ AliOrd.UplineId }}</td>
-				<td align="right">{{ AliOrd.UplineName }}</td>
-				<td align="right">{{ AliOrd.OrderId }}</td>			
-				<td align="right">{{ AliOrd.PayAmount }}</td>	
-<!-- 				<td align="right">{{ AliOrd.IncomePercSelf}}</td> -->
-<!-- 				<td align="right">{{ AliOrd.SharePercUp1 }}</td> -->
-<!-- 				<td align="right">{{ AliOrd.SharePercUp2 }}</td> -->
+				<td align="right">{{ AliOrd.UplineName }}</td>			
 				<td align="right">{{ AliOrd.IncomeSelf }}</td>
-<!-- 				<td align="right">{{ AliOrd.ShareUp1 }}</td> -->
-<!-- 				<td align="right">{{ AliOrd.ShareUp2 }}</td> -->
 				</tr>
 				{% endfor %}
             {% else %}
