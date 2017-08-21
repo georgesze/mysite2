@@ -87,7 +87,7 @@ def AgentList(request):
    
     aggregated = AliConfig.objects.all().aggregate(total=Sum('IncomeTotal'))      
     CollectSum = aggregated['total']   
-         
+       
     return render(request, "payslip.html", {'form_agent':agent_list,
                                             'form_period':form,
                                             'Incometotal':Incometotal,
@@ -117,11 +117,11 @@ def AgentDetail(request, agent_name_slug):
         context_dict['current_agent'] = current_agent
         
         # 2.所有下线佣金明细
-        agent_orders_2 = AliOrd.objects.filter(UplineId=current_agent.AgentId.AgentId,SettleDate__range=(start, end))
+        agent_orders_2 = AliOrd.objects.filter(UplineId=current_agent.AgentId.AgentId,SettleDate__range=(start, end)).order_by('PosID')
         context_dict['agent_orders_2'] = agent_orders_2
         
         # 3.所有下下线佣金明细
-        agent_orders_3 = AliOrd.objects.filter(Up2lineId=current_agent.AgentId.AgentId,SettleDate__range=(start, end))       
+        agent_orders_3 = AliOrd.objects.filter(Up2lineId=current_agent.AgentId.AgentId,SettleDate__range=(start, end)).order_by('PosID')       
         context_dict['agent_orders_3'] = agent_orders_3
         
     except AliConfig.DoesNotExist:
