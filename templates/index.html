@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 {% load static %}
 
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <!-- Bootstrap CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	
 	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">  
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">   
+		
+	<link rel="stylesheet" href="{% static "js/bootstrap-table-group-by.css" %}">
+
+		
   </head>
   
   <body>
@@ -25,68 +30,82 @@
     <h1><a href="/admin/">后台数据管理</a><br /></h1>
 
 
-    <div class="panel-body" style="padding-bottom:0px;">
-        <div class="panel panel-default">
-            <div class="panel-heading">查询条件</div>
-            <div class="panel-body">
-                <form id="formSearch" class="form-horizontal">
-                    <div class="form-group" style="margin-top:15px">
-                        <label class="control-label col-sm-1" for="txt_search_departmentname">部门名称</label>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control" id="txt_search_departmentname">
-                        </div>
-                        <label class="control-label col-sm-1" for="txt_search_statu">状态</label>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control" id="txt_search_statu">
-                        </div>
-                        <div class="col-sm-4" style="text-align:left;">
-                            <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">查询</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>       
-
-        <div id="toolbar" class="btn-group">
-            <button id="btn_add" type="button" class="btn btn-default">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
-            </button>
-            <button id="btn_edit" type="button" class="btn btn-default">
-                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
-            </button>
-            <button id="btn_delete" type="button" class="btn btn-default">
-                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
-            </button>
-        </div>              
-		<table id="tb_departments"></table>
+<div class="container">
+    <h1>Bootstrap Table Examples <a href="https://github.com/wenzhixin/bootstrap-table-examples" class="btn btn-primary" role="button" target="_blank">Learn more &raquo;</a></h1>
+    <div id="toolbar">
+        <button id="remove" class="btn btn-danger" disabled>
+            <i class="glyphicon glyphicon-remove"></i> Delete
+        </button>
     </div>
+    <table id="agent_table"></table>
+</div>
 
 <p>This is a example</p>
 <button id="about-btn"> Test Click Me - I'm Javascript on Speed</button>
 <p>This is another example</p>
 
         
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>        
+<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>       
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-
+	
 <!-- Latest compiled and minified Locales -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 
 <script src="{% static "js/tabletree.js" %}"></script>
-<script src="{% static "js/test.js" %}"></script>
-      
-<script>        
-var tb_json = [{Id: 1, Name: "系统设置", Url: null, ParentId: null, Level: 1, CreateTime: null, Status: 1, SortOrder: 1},
-	           {Id: 2, Name: "菜单管理", Url: "/Systems/Menu/Index", ParentId: 1, Level: 2, CreateTime: null, Status: 1},
-	           {Id: 3, Name: "订单管理", Url: null, ParentId: null, Level: 1, CreateTime: "2017-05-31 17:05:27"},
-	           {Id: 4, Name: "基础数据", Url: null, ParentId: null, Level: 1, CreateTime: "2017-05-31 17:05:55"},
-	           {Id: 5, Name: "新增订单", Url: "/order/add", ParentId: 3, Level: 2, CreateTime: "2017-05-31 17:07:03"}];
-    
-</script>          
-          
+<!-- <script src="{% static "js/test.js" %}"></script> -->
+<script src="{% static "js/bootstrap-table-group-by.js" %}"></script>
+	
+
+<script>
+	$('#agent_table').bootstrapTable({
+//		  url: ActionUrl + 'GetMenuList',
+        groupBy: true,
+        groupByField: 'name',        
+        toolbar: '#toolbar',
+        sidePagination: 'client',
+        pagination: false,
+        treeView: true,
+        treeId: "id",
+        treeField: "name",
+        treeRootLevel: 1,
+        clickToSelect: true,
+        collapseIcon: "glyphicon glyphicon-triangle-right",//折叠样式
+        expandIcon: "glyphicon glyphicon-triangle-bottom",//展开样式
+
+		columns: [{
+	        field: 'id',		
+	        title: 'Item IDs'
+	    }, {
+	        field: 'name',
+	        title: 'Item Name'
+	    }, {
+	        field: 'price',
+	        title: 'Item Price'
+	    }],
+	    data: [{
+	    	id: 1,
+	    	name: 'Item 1',
+	    	price: '$1',
+	        ParentId: null, 
+	        Level: 1
+	    }, {
+	    	id: 2,
+	        name: 'Item 2',
+	        price: '$1222',
+	        ParentId: 1, 
+	        Level: 2
+	    },{id: 3, name: "订单管理",price: '$33333',ParentId: 2, Level: 2}
+	     ,{id: 4, name: "AAA",price: '$33333',ParentId: 2, Level: 2}
+	     ,{id: 5, name: "AAA",price: '$44',ParentId: 2, Level: 2}
+	     ,{id: 6, name: "AAA",price: '$7567',ParentId: 2, Level: 2}
+	    ]
+	});
+</script>
+		  
   </body>
 </html>
