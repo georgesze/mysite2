@@ -27,5 +27,6 @@ urlpatterns = [
     url(r'^upload/$', upld_views.upld),
     url(r'^search/$', search_views.search),
     url(r'^payslip/$', search2.AgentList),
+    url(r'^payslip2/$', search2.AgentTree),
     url(r'^payslip/(?P<agent_name_slug>[\w\-]+)/$', search2.AgentDetail, name='Agent'),
 ]

@@ -4,6 +4,7 @@ from django.views.decorators import csrf
 from django.db.models import Count, Min, Sum, Avg
 from disk.models import AliConfig,AliOrd
 from django import forms
+from django.core import serializers
 from django.db import transaction
 
 import datetime
@@ -92,6 +93,32 @@ def AgentList(request):
                                             'form_period':form,
                                             'Incometotal':Incometotal,
                                             'CollectSum':CollectSum})
+
+
+
+def AgentTree(request):
+    #拿到所有agent配置
+    agent_list = AliConfig.objects.all()
+    Incometotal = 0
+
+    form = SearchForm()
+   
+    aggregated = AliConfig.objects.all().aggregate(total=Sum('IncomeTotal'))      
+    CollectSum = aggregated['total']   
+    
+    json_agent =  serializers.serialize('json', AliConfig.objects.all())
+    
+    
+    return_dict =  {'form_agent':json_agent,
+                    'form_period':form,
+                    'Incometotal':Incometotal,
+                    'CollectSum':CollectSum}
+    
+    return render(request, "agent_payslip.html", return_dict)
+
+
+
+
 
 def AgentDetail(request, agent_name_slug):
     # Create a context dictionary which we can pass to the template rendering engine.
@@ -189,49 +216,7 @@ def CalculateOrderAmount(agent,start,end):
         if update_flag == True:
             order_item.save(update_fields=['IncomeSelf','ShareUp1','ShareUp2'])
                     
-#    transaction.commit()
-
-    
-#     for order_item in orders:
-#         order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金 
-#         order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金 
-#         order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金  
-#         order_item.save()
-        
-        
-################################################################### old code               
-#     for order_item in orders:  
-#         # 计算佣金分成 ---- 计算使用RebateAmt结算金额 ----
-#         #计算个人所得佣金    
-#         order_item.IncomePercSelf = agent.AgentPerc             #自获佣金比例
-#         order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金               
-#                
-#         #取得上线信息
-#         if not agent.AgentUpId == None:
-#             order_item.UplineId = str(agent.AgentUpId.AgentId)        #上线ID
-#          
-#         #计算上线分成佣金
-#             if not order_item.UplineId =='':
-#                 order_item.UplineName = agent.AgentUpId.AgentName       #上线名称
-#                 order_item.SharePercUp1 = agent.Agent2rdPerc                #贡献上级佣金比例
-#                 order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金
-#         
-#             if not agent.AgentUpId.AId.AgentUpId == None:
-#                 
-#         
-#                  #计算上上线分成佣金
-#                 order_item.Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)    #上上线ID
-#         
-#                 if not order_item.Up2lineId =='':   
-#                     order_item.Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName    #上上线名称   
-#                     order_item.SharePercUp2 = agent.Agent3rdPerc                        #贡献上上级佣金比例
-#                     order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金
-#         
-#         #保存计算结果
-#         order_item.save()
-    
-    
-        
+                                 
         
 def CalculateIncome(agent,start,end):
     agent_pid = agent.AgentId.AgentId   
