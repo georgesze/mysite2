@@ -491,7 +491,7 @@
         treeField: "id",//treeView视图字段
         treeId: "id",
         treeRootLevel: 0,//根节点序号
-        treeCollapseAll: true,//是否全部展开
+        treeCollapseAll: false,//是否全部展开
         collapseIcon: "glyphicon glyphicon-chevron-right",//折叠样式
         expandIcon: "glyphicon glyphicon-chevron-down"//展开样式
     });

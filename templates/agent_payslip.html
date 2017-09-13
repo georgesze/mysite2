@@ -53,50 +53,57 @@
 <!-- Latest compiled and minified Locales -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 
-<script src="{% static "js/tabletree.js" %}"></script>
+<!-- <script src="{% static "js/tabletree.js" %}"></script> -->
 
-<!-- <script src="{% static "js/bootstrap-table-group-by.js" %}"></script> -->
+<script src="{% static "js/bootstrap-table-group-by.js" %}"></script>
           	
           	
           	
 <script>
-var json_data = [{"AgentId": 892, "AgentName": null, "AgentUpId": null}
-				,{"AgentId": 133, "AgentName": null, "AgentUpId": null}
-				,{"AgentId": 145, "AgentName": null, "AgentUpId": null}
-				] 
+var json_data =
+		[
+ 	 	 {id: 1,name: 'Item 1',price: '$1',ParentId: null,Level: 1}
+		,{id: 2,name: 'Item 2',price: '$1222',ParentId: 1,Level: 2}
+		,{id: 3, name: "订单管理",price: '$6666',ParentId: 2, Level: 2}
+		,{id: 4, name: "AAA",price: '$33333',ParentId: 2, Level: 2}
+		,{id: 5, name: "AAA",price: '$44',ParentId: 2, Level: 2}
+		,{id: 6, name: "AAA",price: '$7567',ParentId: 2, Level: 2}
+		]
 
-var json_data2 = {{ json_agent|safe  }}
+var json_data2 = {{ json_agent|safe }}
 
-	$('#agent_table').bootstrapTable({
-        //url: {{ json_agent }},
-//         groupBy: true,
-//         groupByField: 'name',        
-//         toolbar: '#toolbar',
-//         sidePagination: 'client',
-//         pagination: false,
-//         treeView: true,
-//         treeId: "id",
-//         treeField: "name",
-//         treeRootLevel: 1,
-//         clickToSelect: true,
-//         collapseIcon: "glyphicon glyphicon-triangle-right",//折叠样式
-//         expandIcon: "glyphicon glyphicon-triangle-bottom",//展开样式
+$('#agent_table').bootstrapTable({
+//	  url: ActionUrl + 'GetMenuList',
+  groupBy: true,
+  groupByField: 'AgentUpId',        
+  toolbar: '#toolbar',
+  sidePagination: 'client',
+  pagination: true,
+  treeView: true,
+  treeId: "id",
+  treeField: "name",
+  treeRootLevel: 1,
+  treeCollapseAll: false,
+  clickToSelect: true,
+  collapseIcon: "glyphicon glyphicon-triangle-right",//折叠样式
+  expandIcon: "glyphicon glyphicon-triangle-bottom",//展开样式
 
-        
-		columns: [{
-	        field: 'AgentId',		
-	        title: 'Item IDs'
-	    }, {
-	        field: 'AgentName',
-	        title: 'Item Name'
-	    }, {
-	        field: 'AgentUpId',
-	        title: 'Item Price'
-	    }],
+	columns: [{
+      field: 'AgentId',		
+      title: 'AgentId'
+  }, {
+      field: 'AgentName',
+      title: 'AgentName'
+  }, {
+      field: 'AgentUpId',
+      title: 'AgentUpId'
+  }, {
+      field: 'AgentUpName',
+      title: 'AgentUpName'
+  }],
+  data: json_data2.rows
 
-        data: json_data2        
-                        
-	});
+});
 </script>          	
           	
         

@@ -8,7 +8,7 @@ from django.core import serializers
 from django.db import transaction
 
 import datetime
-
+import json
 
 class SearchForm(forms.Form):
     #title = forms.CharField(max_length=50)
@@ -106,10 +106,22 @@ def AgentTree(request):
     aggregated = AliConfig.objects.all().aggregate(total=Sum('IncomeTotal'))      
     CollectSum = aggregated['total']   
     
-    json_agent =  serializers.serialize('json', AliConfig.objects.all())
+    queryset_agent = AliConfig.objects.all()
+    all_records_count=queryset_agent.count()
+    
+    json_agent = {'total':all_records_count,'rows':[]}
+    
+    for agent in queryset_agent:
+        json_agent['rows'].append({
+            "AgentId"       : agent.AgentId.AgentId if agent.AgentId else "",
+            "AgentName"     : agent.AgentId.AgentName if agent.AgentId else "",
+            "AgentUpId"     : agent.AgentUpId.AgentId if agent.AgentUpId else "",
+            "AgentUpName"   : agent.AgentUpId.AgentName if agent.AgentUpId else "",     
+         })
+#     json_agent =  serializers.serialize('json', AliConfig.objects.all())
     
     
-    return_dict =  {'form_agent':json_agent,
+    return_dict =  {'json_agent':json.dumps(json_agent),
                     'form_period':form,
                     'Incometotal':Incometotal,
                     'CollectSum':CollectSum}
