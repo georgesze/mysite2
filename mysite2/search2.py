@@ -9,6 +9,13 @@ from django.db import transaction
 
 import datetime
 import json
+import decimal
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return str(o)
+        return super(DecimalEncoder, self).default(o)
 
 class SearchForm(forms.Form):
     #title = forms.CharField(max_length=50)
@@ -113,15 +120,26 @@ def AgentTree(request):
     
     for agent in queryset_agent:
         json_agent['rows'].append({
-            "AgentId"       : agent.AgentId.AgentId if agent.AgentId else "",
-            "AgentName"     : agent.AgentId.AgentName if agent.AgentId else "",
-            "AgentUpId"     : agent.AgentUpId.AgentId if agent.AgentUpId else "",
-            "AgentUpName"   : agent.AgentUpId.AgentName if agent.AgentUpId else "",     
+            "AgentId"           : agent.AgentId.AgentId if agent.AgentId else "",
+            "AgentName"         : agent.AgentId.AgentName if agent.AgentId else "",
+            "AgentUpId"         : agent.AgentUpId.AgentId if agent.AgentUpId else "",
+            "AgentUpName"       : agent.AgentUpId.AgentName if agent.AgentUpId else "",
+            "AgentPerc"         : agent.AgentPerc,   
+            "Agent2rdPerc"      : agent.Agent2rdPerc, 
+            "Agent3rdPerc"      : agent.Agent3rdPerc, 
+            "IncomeSelf"        : agent.IncomeSelf, 
+            "IncomeLv1"         : agent.IncomeLv1, 
+            "IncomeLv2"         : agent.IncomeLv2, 
+            "IncomeTotal"       : agent.IncomeTotal, 
+            "CalculateStatus"   : agent.CalculateStatus, 
+            "Slug"              : '<a href="/payslip/%s">查看明细</a>' %agent.Slug,
+
+#                 <td align="right"><a href="/payslip/{{ AliConfig.Slug }}">点我查看明细</a></td>                 
          })
 #     json_agent =  serializers.serialize('json', AliConfig.objects.all())
     
     
-    return_dict =  {'json_agent':json.dumps(json_agent),
+    return_dict =  {'json_agent':json.dumps(json_agent, cls=DecimalEncoder),
                     'form_period':form,
                     'Incometotal':Incometotal,
                     'CollectSum':CollectSum}

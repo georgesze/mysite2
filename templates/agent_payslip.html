@@ -60,28 +60,18 @@
           	
           	
 <script>
-var json_data =
-		[
- 	 	 {id: 1,name: 'Item 1',price: '$1',ParentId: null,Level: 1}
-		,{id: 2,name: 'Item 2',price: '$1222',ParentId: 1,Level: 2}
-		,{id: 3, name: "订单管理",price: '$6666',ParentId: 2, Level: 2}
-		,{id: 4, name: "AAA",price: '$33333',ParentId: 2, Level: 2}
-		,{id: 5, name: "AAA",price: '$44',ParentId: 2, Level: 2}
-		,{id: 6, name: "AAA",price: '$7567',ParentId: 2, Level: 2}
-		]
-
-var json_data2 = {{ json_agent|safe }}
+var json_data = {{ json_agent|safe }}
 
 $('#agent_table').bootstrapTable({
 //	  url: ActionUrl + 'GetMenuList',
   groupBy: true,
-  groupByField: 'AgentUpId',        
+  groupByField: 'AgentUpName',        
   toolbar: '#toolbar',
   sidePagination: 'client',
-  pagination: true,
+  pagination: false,
   treeView: true,
   treeId: "id",
-  treeField: "name",
+  treeField: "AgentUpId",
   treeRootLevel: 1,
   treeCollapseAll: false,
   clickToSelect: true,
@@ -89,20 +79,34 @@ $('#agent_table').bootstrapTable({
   expandIcon: "glyphicon glyphicon-triangle-bottom",//展开样式
 
 	columns: [{
-      field: 'AgentId',		
-      title: 'AgentId'
+      field: 'AgentId',		title: 'AgentId'
   }, {
-      field: 'AgentName',
-      title: 'AgentName'
+      field: 'AgentName',	title: 'AgentName'
   }, {
-      field: 'AgentUpId',
-      title: 'AgentUpId'
+      field: 'AgentUpId',	title: 'AgentUpId'
   }, {
-      field: 'AgentUpName',
-      title: 'AgentUpName'
+      field: 'AgentUpName', title: 'AgentUpName'
+  }, {
+	  field: 'AgentPerc', title: 'AgentPerc'
+  }, {
+	  field: 'Agent2rdPerc' , title: 'Agent2rdPerc'
+  }, {	  
+	  field: 'Agent3rdPerc', title: 'Agent3rdPerc'
+  }, {	  
+	  field: 'IncomeSelf', title: 'IncomeSelf'
+  }, {	  
+	  field: 'IncomeLv1', title: 'IncomeLv1'
+  }, {	  
+	  field: 'IncomeLv2', title: 'IncomeLv2'
+  }, {	  
+	  field: 'IncomeTotal', title: 'IncomeTotal'
+//   }, {	  
+// 	  field: 'CalculateStatus', title: 'CalculateStatus'
+  }, {	  
+	  field: 'Slug', title: 'Slug'	    
   }],
-  data: json_data2.rows
-
+  data: json_data.rows
+  
 });
 </script>          	
           	
