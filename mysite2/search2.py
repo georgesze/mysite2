@@ -132,7 +132,7 @@ def AgentTree(request):
             "IncomeLv2"         : agent.IncomeLv2, 
             "IncomeTotal"       : agent.IncomeTotal, 
             "CalculateStatus"   : agent.CalculateStatus, 
-            "Slug"              : '<a href="/payslip/%s">查看明细</a>' %agent.Slug,
+            "Slug"              : '<a href="/payslip/%s">Click me</a>' %agent.Slug,
 
 #                 <td align="right"><a href="/payslip/{{ AliConfig.Slug }}">点我查看明细</a></td>                 
          })
