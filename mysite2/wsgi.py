@@ -14,3 +14,5 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite2.settings")
 
 application = get_wsgi_application()
+
+sys.path.append('/usr/lib/python3.5/site-packages')
