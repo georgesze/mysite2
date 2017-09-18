@@ -6,6 +6,7 @@ It exposes the WSGI callable as a module-level variable named ``application``.
 For more information on this file, see
 https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
 """
+sys.path.append('/usr/lib/python3.5/site-packages')
 
 import os
 
@@ -15,4 +16,3 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite2.settings")
 
 application = get_wsgi_application()
 
-sys.path.append('/usr/lib/python3.5/site-packages')
