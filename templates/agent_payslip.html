@@ -79,31 +79,31 @@ $('#agent_table').bootstrapTable({
   expandIcon: "glyphicon glyphicon-triangle-bottom",//展开样式
 
 	columns: [{
-      field: 'AgentId',		title: 'AgentId'
+      field: 'AgentId',		title: '代理ID'
   }, {
-      field: 'AgentName',	title: 'AgentName'
+      field: 'AgentName',	title: '代理名称'
   }, {
-      field: 'AgentUpId',	title: 'AgentUpId'
+      field: 'AgentUpId',	title: '代理上线ID'
   }, {
-      field: 'AgentUpName', title: 'AgentUpName'
+      field: 'AgentUpName', title: '上线名称'
   }, {
-	  field: 'AgentPerc', title: 'AgentPerc'
+	  field: 'AgentPerc', title: '自获佣金比例'
   }, {
-	  field: 'Agent2rdPerc' , title: 'Agent2rdPerc'
+	  field: 'Agent2rdPerc' , title: '贡献上级佣金比例'
   }, {	  
-	  field: 'Agent3rdPerc', title: 'Agent3rdPerc'
+	  field: 'Agent3rdPerc', title: '贡献上上级佣金比例'
   }, {	  
-	  field: 'IncomeSelf', title: 'IncomeSelf'
+	  field: 'IncomeSelf', title: '自获佣金'
   }, {	  
-	  field: 'IncomeLv1', title: 'IncomeLv1'
+	  field: 'IncomeLv1', title: '一级下线贡献佣金'
   }, {	  
-	  field: 'IncomeLv2', title: 'IncomeLv2'
+	  field: 'IncomeLv2', title: '二级下线贡献佣金'
   }, {	  
-	  field: 'IncomeTotal', title: 'IncomeTotal'
+	  field: 'IncomeTotal', title: '总佣金'
 //   }, {	  
 // 	  field: 'CalculateStatus', title: 'CalculateStatus'
   }, {	  
-	  field: 'Slug', title: 'Slug'	    
+	  field: 'Slug', title: '明细链接'	    
   }],
   data: json_data.rows
   
