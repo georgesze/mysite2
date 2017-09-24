@@ -56,9 +56,10 @@
 <!-- <script src="{% static "js/tabletree.js" %}"></script> -->
 
 <script src="{% static "js/bootstrap-table-group-by.js" %}"></script>
-          	
-          	
-          	
+<script src="http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js"></script>      
+<!-- <script src="https://github.com/hhurz/tableExport.jquery.plugin/blob/master/tableExport.js"></script>  	 -->
+<script src="{% static "js/export.js" %}"></script>          	
+
 <script>
 var json_data = {{ json_agent|safe }}
 
@@ -68,7 +69,11 @@ $('#agent_table').bootstrapTable({
   groupByField: 'AgentUpName',        
   toolbar: '#toolbar',
   sidePagination: 'client',
-  pagination: false,
+  pagination: true,
+  pageSize: 25,
+//   clickToSelect: true,
+  showExport: true,                     //是否显示导出
+  exportDataType: "all",              //basic', 'all', 'selected'.
   treeView: true,
   treeId: "id",
   treeField: "AgentUpId",
