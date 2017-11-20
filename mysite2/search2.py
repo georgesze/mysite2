@@ -19,8 +19,8 @@ class DecimalEncoder(json.JSONEncoder):
 
 class SearchForm(forms.Form):
     #title = forms.CharField(max_length=50)
-    period_str = forms.DateField(initial=datetime.date(2017, 9, 1),widget=forms.SelectDateWidget())
-    period_end = forms.DateField(initial=datetime.date(2017, 9, 30),widget=forms.SelectDateWidget())
+    period_str = forms.DateField(initial=datetime.date(2017, 10, 1),widget=forms.SelectDateWidget())
+    period_end = forms.DateField(initial=datetime.date(2017, 10, 31),widget=forms.SelectDateWidget())
 
    
 # 接收POST请求数据
