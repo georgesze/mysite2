@@ -95,15 +95,48 @@ class AliConfig(models.Model):
     
     def __str__(self):
         return self.AgentId.AgentName       
+
+class PayResult(models.Model):
+    class meta:
+        verbose_name = "代理配置"
+        verbose_name_plural = "代理配置"
+
+    AgentId = models.CharField(max_length=20, verbose_name='代理ID', blank=True, null=True)
+    AgentName = models.CharField(max_length=20, verbose_name='代理名称', default=None, blank=True, null=True)
+    AgentUpId = models.CharField(max_length=20, verbose_name='上线ID', blank=True, null=True)
+    AgentUpName = models.CharField(max_length=20, verbose_name='上线名称', blank=True)
+    AgentPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='自获佣金比例')
+    Agent2rdPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='提取二级佣金比例')
+    Agent3rdPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='提取三级佣金比例')
+    ZhaohuoPid = models.CharField(max_length=20, verbose_name='找货广告位', default='', blank=True)
+    ZhaohuoName = models.CharField(max_length=20, verbose_name='找货名称', default='', blank=True)
+    ZhaohuoPerc = models.DecimalField(max_digits=3, decimal_places=2, verbose_name='找货佣金比例', blank=True, null=True)
+    ZhaohuoBot = models.CharField(max_length=20, verbose_name='找货机器人', default='', blank=True)
+    GroupId = models.CharField(max_length=20, verbose_name='团队合伙人', default='', blank=True)
+    IncomeSelf = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='自获佣金额', blank=True, null=True)
+    IncomeLv1 = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='下级贡献佣金', blank=True, null=True)
+    IncomeLv2 = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='二级贡献佣金', blank=True, null=True)
+    IncomeTotal = models.DecimalField(max_digits=8, decimal_places=2, verbose_name='总佣金', blank=True, null=True)
+    CalculateStatus = models.CharField(max_length=10, verbose_name='计算状态', default='', blank=True)
+    CalculateYear = models.CharField(max_length=4, verbose_name='计算年份', default='', blank=True)
+    CalculateMonth = models.CharField(max_length=2, verbose_name='计算月份', default='', blank=True)
+    Slug = models.SlugField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.Slug = slugify(self.AgentId)
+        super(PayResult, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.AgentName
+
     #===========================================================================
     # def publish(self):
     #     self.published_date = timezone.now()
     #     self.save()
     # def approved_commentimages(self):
-    #     return self.comments.filter(approved_comment=True)    
+    #     return self.comments.filter(approved_comment=True)
     #===========================================================================
-            
-    
+
 class Agent(models.Model):
     class meta:
         verbose_name = "代理"

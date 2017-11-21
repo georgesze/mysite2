@@ -23,7 +23,7 @@ class SearchForm(forms.Form):
     period_end = forms.DateField(initial=datetime.date(2017, 10, 31),widget=forms.SelectDateWidget())
 
    
-# 接收POST请求数据
+# 接收POST请求数据    payslip 1
 def AgentList(request):
     #拿到所有agent配置
     agent_list = AliConfig.objects.all()
@@ -91,8 +91,14 @@ def AgentList(request):
                 CalculateIncome(agent,start,end)
                 
     else:
-        form = SearchForm()
-   
+        #form = SearchForm()
+        form = SearchForm({'period_str': datetime.date(2017, 10, 1), 'period_end': datetime.date(2017, 10, 31)})
+        if form.is_valid():
+            start = form.cleaned_data.get('period_str')
+            end = form.cleaned_data.get('period_end') + datetime.timedelta(days=1)
+            request.session['start'] = str(start)
+            request.session['end'] = str(end)
+
     aggregated = AliConfig.objects.all().aggregate(total=Sum('IncomeTotal'))      
     CollectSum = aggregated['total']   
        
@@ -104,12 +110,12 @@ def AgentList(request):
 
 
 def AgentTree(request):
-    #拿到所有agent配置
+    #拿到所有agent配置    payslip 2
     agent_list = AliConfig.objects.all()
     Incometotal = 0
 
     form = SearchForm()
-   
+
     aggregated = AliConfig.objects.all().aggregate(total=Sum('IncomeTotal'))      
     CollectSum = aggregated['total']   
     
@@ -153,6 +159,15 @@ def AgentTree(request):
 def AgentDetail(request, agent_name_slug):
     # Create a context dictionary which we can pass to the template rendering engine.
     context_dict = {}
+
+    # form = SearchForm({'period_str':datetime.date(2017, 10, 1),'period_end':datetime.date(2017, 10, 31)})
+    # if form.is_valid():
+    #
+    #     start = form.cleaned_data.get('period_str')
+    #     end = form.cleaned_data.get('period_end')
+    #
+    # request.session['start'] = str(start)
+    # request.session['end'] = str(end)
 
     try:
         current_agent = AliConfig.objects.get(Slug=agent_name_slug)
