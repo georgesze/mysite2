@@ -9,7 +9,7 @@ import csv
     # django.setup()
 
 #from arrears.models import D072Qf 
-from disk.models import AliOrd,Agent,AliConfig
+from disk.models import AliOrd,Agent,AliConfig,PayResult
 from django.shortcuts import render,render_to_response
 from django import forms
 from django.http import HttpResponse
@@ -108,7 +108,8 @@ def upld(request):
     
     elif (request.method == "POST") and ('delete_order' in request.POST):   
             
-        AliOrd.objects.all().delete()    
+        AliOrd.objects.all().delete()
+        # PayResult.objects.all().delete()
         return HttpResponse('所有订单已删除')            
     else:
         uf = UserForm()

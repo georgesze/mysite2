@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from disk.models import AliOrd,AliConfig,Agent
+from disk.models import AliOrd, AliConfig, Agent, PayResult
 
 # Add in this class to customized the Admin Interface
 class AliConfigAdmin(admin.ModelAdmin):
@@ -12,5 +12,6 @@ class AliConfigAdmin(admin.ModelAdmin):
 
 
 admin.site.register(AliOrd)
-admin.site.register(AliConfig,AliConfigAdmin)
+admin.site.register(AliConfig, AliConfigAdmin)
 admin.site.register(Agent)
+admin.site.register(PayResult)
