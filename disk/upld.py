@@ -122,38 +122,28 @@ def upld(request):
                                          'order_list':order_list,
                                          'agent_file':agent_file})
 
-
-
-#for row in api_data:
-#    if is_new_row(row, old_data):
-#        new_rows_array.append(row)
-#    else:
-#        if is_data_modified(row, old_data):
-#            ...
-#            # do the update
-#        else:
-#            continue
-# MyModel.objects.bulk_create(new_rows_array)
-
 def UploadAgent(request):
     agent_file = UserForm(request.POST,request.FILES)
     
     if agent_file.is_valid():
         # 打开文件
-        #f = request.FILES['file']
         # add agent entry
         fname = request.FILES['file'].temporary_file_path()
         with open(fname, 'r') as f:
-            reader = csv.reader(f)          
+            reader = csv.reader(f)
             
             line_num = 0
             for line in reader: 
                 line_num = line_num + 1
                 if (line_num != 1): 
                     # add agent entry
-                    Agent.objects.get_or_create(AgentId  = line[0],
-                                                AgentName= line[1])
-                    
+                    # Agent.objects.get_or_create(AgentId  = line[0],
+                    #                             AgentName= line[1])
+                    Agent.objects.update_or_create(AgentId  = line[0], AgentName= line[1],
+                                                    defaults={'AgentName': line[1]})
+
+
+
         # add aliconfig entry            
         fname = request.FILES['file'].temporary_file_path()
         with open(fname, 'r') as f:
@@ -195,33 +185,66 @@ def UploadAgent(request):
         return HttpResponse('成功更新')
 
 
+def upload_agent_group(request):
+    agent_file = UserForm(request.POST, request.FILES)
+
+    if agent_file.is_valid():
+        # 打开文件
+        # add agent entry
+        fname = request.FILES['file'].temporary_file_path()
+        with open(fname, 'r') as f:
+            reader = csv.reader(f)
+
+            line_num = 0
+            for line in reader:
+                line_num = line_num + 1
+                if (line_num != 1):
+                    # add agent entry 机器人广告位
+                    Agent.objects.update_or_create(AgentId=line[1], AgentName=line[0],
+                                                   defaults={'AgentName': line[0]})
+                    # add agent entry 小布丁广告位
+                    Agent.objects.update_or_create(AgentId=line[3], AgentName=line[2],
+                                                   defaults={'AgentName': line[2]})
+                    # add agent entry APP广告位
+                    Agent.objects.update_or_create(AgentId=line[5], AgentName=line[4],
+                                                   defaults={'AgentName': line[4]})
+
+        # add aliconfig entry
+        fname = request.FILES['file'].temporary_file_path()
+        with open(fname, 'r') as f:
+            reader = csv.reader(f)
+
+            WorkList = []
+            ls_error = []
+            ls_count_succ = 0
+
+            line_num = 0
+            for line in reader:
+                line_num = line_num + 1
+
+                if (line_num != 1):  # skip the first line
+                    try:
+                        obj_AgentId = None
+                        obj_AgentUpId = None
+                        # get object
+                        obj_AgentId = Agent.objects.get(AgentId=line[0])
+                        obj_AgentUpId = Agent.objects.get(AgentId=line[5])
+                    except ObjectDoesNotExist:
+                        ls_error.append(line[0])
+
+                    if not obj_AgentId == None:
+                        WorkList.append(AliConfig(AgentId=obj_AgentId,
+                                                  AgentUpId=obj_AgentUpId,
+                                                  AgentPerc=line[6],
+                                                  Agent2rdPerc=line[7],
+                                                  Agent3rdPerc=line[8],
+                                                  Slug=line[0]))
+                        ls_count_succ = ls_count_succ + 1
+        AliConfig.objects.bulk_create(WorkList)
+
+        return HttpResponse('成功更新')
 
 
 
 
 
-
-# def UploadAgent(request):
-#     agent_file = UserForm(request.POST,request.FILES)
-#     
-#     if agent_file.is_valid():
-#         # 打开文件
-#         #f = request.FILES['file']
-#         fname = request.FILES['file'].temporary_file_path()
-#         with open(fname, 'r') as f:
-#             reader = csv.reader(f)
-# 
-#             WorkList = []            
-#             
-#             line_num = 0
-#             for line in reader: 
-#                 line_num = line_num + 1
-#                 if (line_num != 1): 
-#                     WorkList.append(Agent(AgentId =line[0],
-#                                           AgentName=line[1]))
-#            
-#          
-#         Agent.objects.bulk_create(WorkList)
-#         
-#         return HttpResponse('upload ok!')
-    

@@ -5,13 +5,20 @@ from django.contrib import admin
 from disk.models import AliOrd, AliConfig, Agent, PayResult
 
 # Add in this class to customized the Admin Interface
+class AliOrdAdmin(admin.ModelAdmin):
+    list_display = ('CommId', 'CommPrice', 'PayAmount','SettleDate','RebateAmt','OrderId','PosName','UplineName','Up2lineName',)
+
 class AliConfigAdmin(admin.ModelAdmin):
-    None
-    # prepopulated_fields doesn’t accept DateTimeField, ForeignKey, OneToOneField, and ManyToManyField fields.
-    #prepopulated_fields = {'Slug': ('AgentId',)}
+    list_display = ('AgentId', 'AgentUpId', 'AgentPerc', 'Agent2rdPerc', 'Agent3rdPerc', 'GroupId',)
 
+class AgentAdmin(admin.ModelAdmin):
+    list_display = ('AgentName', 'AgentId',)
 
-admin.site.register(AliOrd)
+class PayResultAdmin(admin.ModelAdmin):
+    list_display = ('AgentName', 'AgentId', 'AgentUpName', 'AgentUpId', 'AgentPerc', 'Agent2rdPerc', 'Agent3rdPerc', 'GroupId',
+                    'IncomeSelf', 'IncomeLv1', 'IncomeLv2', 'IncomeTotal', 'CalculateStatus', 'CalculateYear', 'CalculateMonth', 'PayAccount', 'PayStatus',)
+
+admin.site.register(AliOrd, AliOrdAdmin)
 admin.site.register(AliConfig, AliConfigAdmin)
-admin.site.register(Agent)
-admin.site.register(PayResult)
+admin.site.register(Agent, AgentAdmin)
+admin.site.register(PayResult, PayResultAdmin)

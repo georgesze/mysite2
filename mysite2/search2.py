@@ -6,11 +6,13 @@ from disk.models import AliConfig, AliOrd, PayResult
 from django import forms
 from django.core import serializers
 from django.db import transaction
+from datetime import datetime
+from django.http import HttpResponse
 
 import datetime
 import json
 import decimal
-
+import xlwt
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -160,15 +162,6 @@ def AgentDetail(request, agent_name_slug):
     # Create a context dictionary which we can pass to the template rendering engine.
     context_dict = {}
 
-    # form = SearchForm({'period_str':datetime.date(2017, 10, 1),'period_end':datetime.date(2017, 10, 31)})
-    # if form.is_valid():
-    #
-    #     start = form.cleaned_data.get('period_str')
-    #     end = form.cleaned_data.get('period_end')
-    #
-    # request.session['start'] = str(start)
-    # request.session['end'] = str(end)
-
     try:
         current_agent = AliConfig.objects.get(Slug=agent_name_slug)
         context_dict['agent_name'] = current_agent.AgentId.AgentName + current_agent.AgentId.AgentId
@@ -203,7 +196,27 @@ def AgentDetail(request, agent_name_slug):
         # Don't do anything - the template displays the "no order" message for us.
         pass
 
-    # Go render the response and return it to the client.
+    if (request.method == "POST") and ('download_statement' in request.POST):
+        # style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on',
+        #                  num_format_str='#,##0.00')
+        # style1 = xlwt.easyxf(num_format_str='#')
+
+        wb = xlwt.Workbook()
+        ws = wb.add_sheet('当前代理佣金明细' + context_dict['agent_name'])
+        excel_add_sheet(ws, context_dict['agent_orders'])
+
+        ws = wb.add_sheet('所有一级下线订单')
+        excel_add_sheet(ws, context_dict['agent_orders_2'])
+
+        ws = wb.add_sheet('所有二级下线订单')
+        excel_add_sheet(ws, context_dict['agent_orders_3'])
+
+        response = HttpResponse(content_type='application/msexcel')
+        response['Content-Disposition'] = 'attachment; filename=example.xls'
+        wb.save(response)
+        return response
+
+        # Go render the response and return it to the client.
     return render(request, 'order.html', context_dict)
 
 
@@ -299,15 +312,24 @@ def CalculateIncome(agent, start, end):
     # 保存计算结果
     agent.save()
 
+
 def save_pay_result(agent, start, end):
     if not start == None:
         year  = start.strftime('%Y')
         month = start.strftime('%m')
 
-        updatedict={'AgentId':        agent.AgentId.AgentId,
-                    'AgentName':      agent.AgentId.AgentName,
-                    "AgentUpId":      agent.AgentUpId.AgentId if agent.AgentUpId else "",
-                    "AgentUpName":    agent.AgentUpId.AgentName if agent.AgentUpId else "",
+        updatedict={'AgentId':        agent.AgentId.AgentId if agent.AgentId else "",
+                    'AgentName':      agent.AgentId.AgentName if agent.AgentId else "",
+                    'AgentUpId':      agent.AgentUpId.AgentId if agent.AgentUpId else "",
+                    'AgentUpName':    agent.AgentUpId.AgentName if agent.AgentUpId else "",
+                    'AgentPerc':      agent.AgentPerc,
+                    'Agent2rdPerc':   agent.Agent2rdPerc,
+                    'Agent3rdPerc':   agent.Agent3rdPerc,
+                    'ZhaohuoPid':     agent.ZhaohuoPid,
+                    'ZhaohuoName':    agent.ZhaohuoName,
+                    'ZhaohuoPerc':    agent.ZhaohuoPerc,
+                    'ZhaohuoBot':     agent.ZhaohuoBot,
+                    'GroupId':        agent.GroupId,
                     'IncomeSelf':     agent.IncomeSelf,
                     'IncomeLv1':      agent.IncomeLv1,
                     'IncomeLv2':      agent.IncomeLv2,
@@ -317,5 +339,34 @@ def save_pay_result(agent, start, end):
                     'CalculateMonth': month}
 
         PayResult.objects.update_or_create(
-            AgentId=agent.AgentId,CalculateYear=year,CalculateMonth=month,
+            AgentId=agent.AgentId.AgentId, CalculateYear=year, CalculateMonth=month,
             defaults=updatedict)
+
+
+def excel_add_sheet(ws, context_dict):
+    style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on',
+                         num_format_str='#,##0.00')
+    line_0 = [u'淘宝订单号', u'订单创建时间', u'订单结算时间', u'商品信息', u'商品类目', u'商品数量', u'商品单价',
+              u'订单状态', u'订单类型', u'付款金额', u'代理ID', u'代理', u'代理上线ID', u'代理上线', u'佣金金额']
+    # 生成第一行
+    for i in range(0, len(line_0)):
+        ws.write(0, i, line_0[i], style0)
+    line_num = 1
+    for line in context_dict:
+        ws.write(line_num, 0, line.OrderId)
+        ws.write(line_num, 1, line.CreatDate)
+        ws.write(line_num, 2, line.SettleDate)
+        ws.write(line_num, 3, line.CommType)
+        ws.write(line_num, 4, line.Category)
+        ws.write(line_num, 5, line.CommQty)
+        ws.write(line_num, 6, line.CommPrice)
+        ws.write(line_num, 7, line.OrdStatus)
+        ws.write(line_num, 8, line.OrdType)
+        ws.write(line_num, 9, line.PayAmount)
+        ws.write(line_num, 10, line.PosID)
+        ws.write(line_num, 11, line.PosName)
+        ws.write(line_num, 12, line.UplineId)
+        ws.write(line_num, 13, line.UplineName)
+        ws.write(line_num, 14, line.IncomeSelf)
+
+        line_num = line_num + 1
