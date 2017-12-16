@@ -23,14 +23,21 @@ class DecimalEncoder(json.JSONEncoder):
 
 class SearchForm(forms.Form):
     # title = forms.CharField(max_length=50)
-    period_str = forms.DateField(initial=datetime.date(2017, 10, 1), widget=forms.SelectDateWidget())
-    period_end = forms.DateField(initial=datetime.date(2017, 10, 31), widget=forms.SelectDateWidget())
+    #period_str = forms.DateField(initial=datetime.date(2017, 10, 1), widget=forms.SelectDateWidget())
+    #period_end = forms.DateField(initial=datetime.date(2017, 10, 31), widget=forms.SelectDateWidget())
 
+    now = datetime.datetime.now()
+    this_month_start = datetime.datetime(now.year, now.month, 1)
+    last_month_end = this_month_start - datetime.timedelta(days=1)
+    last_month_start = datetime.datetime(last_month_end.year, last_month_end.month, 1)
+
+    period_str = forms.DateField(initial= last_month_start.date(), widget=forms.SelectDateWidget())
+    period_end = forms.DateField(initial= last_month_end.date(), widget=forms.SelectDateWidget())
 
 # 接收POST请求数据    payslip 1
 def AgentList(request):
     # 拿到所有agent配置
-    agent_list = AliConfig.objects.all()
+    current_payment = AliConfig.objects.all()
     Incometotal = 0
 
     if (request.method == "POST") and ('calculate_income' in request.POST):
@@ -47,9 +54,13 @@ def AgentList(request):
             end = request.session.get('end')
             start = datetime.datetime.strptime(start, "%Y-%m-%d").date()
             end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
+            current_year = start.strftime('%Y')
+            current_month = start.strftime('%m')
 
-            # 取到所有代理列表
-            # agent_list = AliConfig.objects.filter()
+            # # 取到当前一期代理工资----用于显示
+            # current_payment = PayResult.objects.filter(CalculateYear=current_year, CalculateMonth=current_month)
+
+            # 取到所有代理列表----用于计算
             agent_list = AliConfig.objects.all()
 
             # 取到期间总金额 from upload
@@ -61,7 +72,20 @@ def AgentList(request):
                 # 计算所有订单佣金 volume 20000+
                 CalculateOrderAgent(agent, start, end)
 
-                CalculateOrderAmount(agent, start, end)
+                # 分别计算机器人,找货，APP的订单
+                agent_pid = agent.AgentId
+                orders = AliOrd.objects.filter(PosID=agent_pid, SettleDate__range=(start, end))
+                CalculateOrderAmount(agent, orders)
+
+                #ZhaohuoPid can be None type
+                agent_pid = str(agent.ZhaohuoPid)
+                orders = AliOrd.objects.filter(PosID=agent_pid, SettleDate__range=(start, end))
+                CalculateOrderAmount(agent, orders)
+
+                agent_pid = str(agent.AppPid)
+                orders = AliOrd.objects.filter(PosID=agent_pid, SettleDate__range=(start, end))
+                CalculateOrderAmount(agent, orders)
+
 
                 # 计算收入 个人订单收入 + 一级下线贡献佣金 + 二级下线贡献佣金
                 CalculateIncome(agent, start, end)
@@ -69,11 +93,14 @@ def AgentList(request):
                 # 保存月佣金计算记录
                 save_pay_result(agent, start, end)
 
+                # 取到当前一期代理工资----用于显示
+                current_payment = PayResult.objects.filter(CalculateYear=current_year, CalculateMonth=current_month)
+
     elif (request.method == "POST") and ('display_income' in request.POST):
         form = SearchForm(request.POST)
         if form.is_valid():
             start = form.cleaned_data.get('period_str')
-            request.session['star   t'] = str(start)
+            request.session['start'] = str(start)
 
             end = form.cleaned_data.get('period_end') + datetime.timedelta(days=1)
             request.session['end'] = str(end)
@@ -84,22 +111,20 @@ def AgentList(request):
             start = datetime.datetime.strptime(start, "%Y-%m-%d").date()
             end = datetime.datetime.strptime(end, "%Y-%m-%d").date()
 
-            # 取到所有代理列表
-            # agent_list = AliConfig.objects.filter()
-            agent_list = AliConfig.objects.all()
+            current_year = start.strftime('%Y')
+            current_month = start.strftime('%m')
+
+            # 取到当前一期代理工资
+            current_payment = PayResult.objects.filter(CalculateYear=current_year, CalculateMonth=current_month)
 
             # 取到期间总金额 from upload CSV file
             aggregated = AliOrd.objects.filter(SettleDate__range=(start, end)).aggregate(total=Sum('RebateAmt'))
             Incometotal = aggregated['total']
 
-            # 遍历所有 代理 计算
-            for agent in agent_list:
-                # 计算收入 个人订单收入 + 一级下线贡献佣金 + 二级下线贡献佣金
-                CalculateIncome(agent, start, end)
-
     else:
-        # form = SearchForm()
-        form = SearchForm({'period_str': datetime.date(2017, 10, 1), 'period_end': datetime.date(2017, 10, 31)})
+
+        #form = SearchForm({'period_str': datetime.date(2017, 10, 1), 'period_end': datetime.date(2017, 10, 31)})
+        form = SearchForm({'period_str': get_date('last_month_start'), 'period_end': get_date('last_month_end')})
         if form.is_valid():
             start = form.cleaned_data.get('period_str')
             end = form.cleaned_data.get('period_end') + datetime.timedelta(days=1)
@@ -109,7 +134,7 @@ def AgentList(request):
     aggregated = AliConfig.objects.all().aggregate(total=Sum('IncomeTotal'))
     CollectSum = aggregated['total']
 
-    return render(request, "payslip.html", {'form_agent': agent_list,
+    return render(request, "payslip.html", {'form_agent': current_payment,
                                             'form_period': form,
                                             'Incometotal': Incometotal,
                                             'CollectSum': CollectSum})
@@ -221,22 +246,28 @@ def AgentDetail(request, agent_name_slug):
 
 
 def CalculateOrderAgent(agent, start, end):
-    agent_pid = agent.AgentId.AgentId
-    orders = AliOrd.objects.filter(PosID=agent_pid, SettleDate__range=(start, end))
+    agent_pid = str(agent.AgentId)
+    zhaohuo_pid = str(agent.ZhaohuoPid)
+    app_pid = str(agent.AppPid)
 
     l_UplineId = None
     l_UplineName = None
     l_Up2lineId = None
     l_Up2lineName = None
 
-    if not agent.AgentUpId == None:
-        l_UplineId = str(agent.AgentUpId.AgentId)  # 上线ID
-        l_UplineName = agent.AgentUpId.AgentName  # 上线名称
+    if agent.AgentUpId is not None:
+        l_UplineId = str(agent.AgentUpId)  # 上线ID
+        l_UplineName = str(agent.AgentUpId.AgentName)  # 上线名称
 
-        if not agent.AgentUpId.AId.AgentUpId == None:
-            l_Up2lineId = str(agent.AgentUpId.AId.AgentUpId.AgentId)  # 上上线ID
-            l_Up2lineName = agent.AgentUpId.AId.AgentUpId.AgentName  # 上上线名称
+        if agent.AgentUpId.AId is not None: # AI反向链接 AgentId one on one 字段
+            l_Up2lineId = str(agent.AgentUpId.AId.AgentUpId)  # 上上线ID
 
+            if agent.AgentUpId.AId.AgentUpId is not None:
+                l_Up2lineName = str(agent.AgentUpId.AId.AgentUpId.AgentName)  # 上上线名称
+            else:
+                pass
+
+    # 机器人 PID
     AliOrd.objects.filter(PosID=agent_pid, SettleDate__range=(start, end)).update(UplineId=l_UplineId,
                                                                                   UplineName=l_UplineName,
                                                                                   Up2lineId=l_Up2lineId,
@@ -244,14 +275,24 @@ def CalculateOrderAgent(agent, start, end):
                                                                                   IncomePercSelf=agent.AgentPerc,
                                                                                   SharePercUp1=agent.Agent2rdPerc,
                                                                                   SharePercUp2=agent.Agent3rdPerc)
-
-
+    # 找货PID
+    AliOrd.objects.filter(PosID=zhaohuo_pid, SettleDate__range=(start, end)).update(UplineId=l_UplineId,
+                                                                                  UplineName=l_UplineName,
+                                                                                  Up2lineId=l_Up2lineId,
+                                                                                  Up2lineName=l_Up2lineName,
+                                                                                  IncomePercSelf=agent.AgentPerc,
+                                                                                  SharePercUp1=agent.Agent2rdPerc,
+                                                                                  SharePercUp2=agent.Agent3rdPerc)
+    # APP ID
+    AliOrd.objects.filter(PosID=app_pid, SettleDate__range=(start, end)).update(UplineId=l_UplineId,
+                                                                                  UplineName=l_UplineName,
+                                                                                  Up2lineId=l_Up2lineId,
+                                                                                  Up2lineName=l_Up2lineName,
+                                                                                  IncomePercSelf=agent.AgentPerc,
+                                                                                  SharePercUp1=agent.Agent2rdPerc,
+                                                                                  SharePercUp2=agent.Agent3rdPerc)
 @transaction.atomic
-def CalculateOrderAmount(agent, start, end):
-    # get aggent orders
-    agent_pid = agent.AgentId.AgentId
-    orders = AliOrd.objects.filter(PosID=agent_pid, SettleDate__range=(start, end))
-
+def CalculateOrderAmount(agent, orders):
     for order_item in orders:
         update_flag = False
 
@@ -270,24 +311,43 @@ def CalculateOrderAmount(agent, start, end):
             update_flag = True
             order_item.ShareUp2 = l_temp
 
-        #                 order_item.IncomeSelf = order_item.RebateAmt * agent.AgentPerc    #自获佣金
-        #                 order_item.ShareUp1 = order_item.RebateAmt * agent.Agent2rdPerc       #贡献上级佣金
-        #                 order_item.ShareUp2 = order_item.RebateAmt * agent.Agent3rdPerc     #贡献上上级佣金
         if update_flag == True:
             order_item.save(update_fields=['IncomeSelf', 'ShareUp1', 'ShareUp2'])
 
 
 def CalculateIncome(agent, start, end):
-    agent_pid = agent.AgentId.AgentId
+    # 找货PID APP的PID没有下线关系，只有机器人PID有上下线关系
+    agent_pid = agent.AgentId
+    zhaohuo_pid = str(agent.ZhaohuoPid)
+    app_pid = str(agent.AppPid)
 
     # 个人订单收入
     aggregated1 = AliOrd.objects.filter(PosID=agent_pid, SettleDate__range=(start, end)).aggregate(
         Income=Sum('RebateAmt'))
     if aggregated1['Income'] == None:
-        agent.IncomeSelf = 0
+        income_agent = 0
     else:
-        agent.IncomeSelf = aggregated1['Income'] * agent.AgentPerc
+        income_agent = aggregated1['Income'] * agent.AgentPerc
 
+    # 个人找货订单收入
+    aggregated1 = AliOrd.objects.filter(PosID=zhaohuo_pid, SettleDate__range=(start, end)).aggregate(
+        Income=Sum('RebateAmt'))
+    if aggregated1['Income'] == None:
+        income_zhaohuo = 0
+    else:
+        income_zhaohuo = aggregated1['Income'] * agent.AgentPerc
+
+    # 个人APP订单收入
+    aggregated1 = AliOrd.objects.filter(PosID=app_pid, SettleDate__range=(start, end)).aggregate(
+        Income=Sum('RebateAmt'))
+    if aggregated1['Income'] == None:
+        income_app = 0
+    else:
+        income_app = aggregated1['Income'] * agent.AgentPerc
+
+    agent.IncomeSelf = income_agent + income_zhaohuo + income_app
+
+    ##################下线佣金计算#################################
     # 一级下线贡献佣金
     aggregatedLv1 = AliOrd.objects.filter(UplineId=agent_pid, SettleDate__range=(start, end)).aggregate(
         IncomeLv1=Sum('ShareUp1'))
@@ -295,7 +355,6 @@ def CalculateIncome(agent, start, end):
         agent.IncomeLv1 = 0
     else:
         agent.IncomeLv1 = aggregatedLv1['IncomeLv1']
-        # agent.IncomeLv1 = aggregatedLv1['IncomeLv1'] * agent.Agent2rdPerc
 
     # 二级下线贡献佣金
     aggregatedLv2 = AliOrd.objects.filter(Up2lineId=agent_pid, SettleDate__range=(start, end)).aggregate(
@@ -304,7 +363,6 @@ def CalculateIncome(agent, start, end):
         agent.IncomeLv2 = 0
     else:
         agent.IncomeLv2 = aggregatedLv2['IncomeLv2']
-        # agent.IncomeLv2 = aggregatedLv2['IncomeLv2'] * agent.Agent3rdPerc
 
     # 总佣金
     agent.IncomeTotal = agent.IncomeSelf + agent.IncomeLv1 + agent.IncomeLv2
@@ -315,31 +373,32 @@ def CalculateIncome(agent, start, end):
 
 def save_pay_result(agent, start, end):
     if not start == None:
-        year  = start.strftime('%Y')
+        year = start.strftime('%Y')
         month = start.strftime('%m')
 
-        updatedict={'AgentId':        agent.AgentId.AgentId if agent.AgentId else "",
+        updatedict={'AgentId':        str(agent.AgentId) if agent.AgentId else "",
                     'AgentName':      agent.AgentId.AgentName if agent.AgentId else "",
-                    'AgentUpId':      agent.AgentUpId.AgentId if agent.AgentUpId else "",
+                    'AgentUpId':      str(agent.AgentUpId) if agent.AgentUpId else "",
                     'AgentUpName':    agent.AgentUpId.AgentName if agent.AgentUpId else "",
                     'AgentPerc':      agent.AgentPerc,
                     'Agent2rdPerc':   agent.Agent2rdPerc,
                     'Agent3rdPerc':   agent.Agent3rdPerc,
-                    'ZhaohuoPid':     agent.ZhaohuoPid,
-                    'ZhaohuoName':    agent.ZhaohuoName,
-                    'ZhaohuoPerc':    agent.ZhaohuoPerc,
-                    'ZhaohuoBot':     agent.ZhaohuoBot,
+                    'ZhaohuoPid':     str(agent.ZhaohuoPid) if agent.ZhaohuoPid else "",
+                    'ZhaohuoName':    agent.ZhaohuoPid.AgentName if agent.ZhaohuoPid else "",
+                    'AppPid':         str(agent.AppPid) if agent.AppPid else "",
+                    'AppName':        agent.AppPid.AgentName if agent.AppPid else "",
                     'GroupId':        agent.GroupId,
                     'IncomeSelf':     agent.IncomeSelf,
                     'IncomeLv1':      agent.IncomeLv1,
                     'IncomeLv2':      agent.IncomeLv2,
                     'IncomeTotal':    agent.IncomeTotal,
+                    'Slug':           agent.Slug,
                     'CalculateStatus': 'OK',
                     'CalculateYear':  year,
                     'CalculateMonth': month}
 
         PayResult.objects.update_or_create(
-            AgentId=agent.AgentId.AgentId, CalculateYear=year, CalculateMonth=month,
+            AgentId=agent.AgentId, CalculateYear=year, CalculateMonth=month,
             defaults=updatedict)
 
 
@@ -370,3 +429,17 @@ def excel_add_sheet(ws, context_dict):
         ws.write(line_num, 14, line.IncomeSelf)
 
         line_num = line_num + 1
+
+def get_date(function):
+    now = datetime.datetime.now()
+
+    if function == 'last_month_start':
+        this_month_start = datetime.datetime(now.year, now.month, 1)
+        last_month_end = this_month_start - datetime.timedelta(days=1)
+        last_month_start = datetime.datetime(last_month_end.year, last_month_end.month, 1)
+        return last_month_start.date()
+
+    if function == 'last_month_end':
+        this_month_start = datetime.datetime(now.year, now.month, 1)
+        last_month_end = this_month_start - datetime.timedelta(days=1)
+        return last_month_end.date()

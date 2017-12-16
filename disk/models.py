@@ -94,11 +94,15 @@ class AliConfig(models.Model):
     Slug = models.SlugField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.Slug = slugify(self.AgentId.AgentId)
+        self.Slug = slugify(self.AgentId)
         super(AliConfig, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.AgentId.AgentName
+        if self.AgentId is None:
+            agent_name = ''
+        else:
+            agent_name = self.AgentId.AgentName
+        return agent_name
 
 
 class PayResult(models.Model):
@@ -131,9 +135,10 @@ class PayResult(models.Model):
     PayStatus = models.CharField(max_length=20, verbose_name='支付情况', blank=True, null=True)
     Slug = models.SlugField(blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        self.Slug = slugify(self.AgentId)
-        super(PayResult, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     str_agentid = str(self.AgentId)
+    #     self.Slug = slugify(str_agentid)
+    #     super(PayResult, self).save(*args, **kwargs)
 
     # def __str__(self):
     #     return self.AgentName
@@ -156,4 +161,4 @@ class Agent(models.Model):
     AgentName = models.CharField(max_length=20, verbose_name=u'代理名称', default='')
 
     def __str__(self):
-        return self.AgentName
+        return self.AgentId

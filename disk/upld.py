@@ -103,7 +103,8 @@ def upld(request):
 #         uf = UserForm()
 #         order_list = []
 #         agent_file = UserForm() 
-        UploadAgent(request)
+        #UploadAgent(request)
+        upload_agent_group(request)
         return HttpResponse('upload ok!')
     
     elif (request.method == "POST") and ('delete_order' in request.POST):   
@@ -200,14 +201,17 @@ def upload_agent_group(request):
                 line_num = line_num + 1
                 if (line_num != 1):
                     # add agent entry 机器人广告位
-                    Agent.objects.update_or_create(AgentId=line[1], AgentName=line[0],
-                                                   defaults={'AgentName': line[0]})
+                    if line[1] != '':
+                        Agent.objects.update_or_create(AgentId=line[1], AgentName=line[0],
+                                                       defaults={'AgentName': line[0]})
                     # add agent entry 小布丁广告位
-                    Agent.objects.update_or_create(AgentId=line[3], AgentName=line[2],
-                                                   defaults={'AgentName': line[2]})
+                    if line[3] != '':
+                        Agent.objects.update_or_create(AgentId=line[3], AgentName=line[2],
+                                                       defaults={'AgentName': line[2]})
                     # add agent entry APP广告位
-                    Agent.objects.update_or_create(AgentId=line[5], AgentName=line[4],
-                                                   defaults={'AgentName': line[4]})
+                    if line[5] != '':
+                        Agent.objects.update_or_create(AgentId=line[5], AgentName=line[4],
+                                                       defaults={'AgentName': line[4]})
 
         # add aliconfig entry
         fname = request.FILES['file'].temporary_file_path()
@@ -219,27 +223,44 @@ def upload_agent_group(request):
             ls_count_succ = 0
 
             line_num = 0
+            group_id = 0
             for line in reader:
                 line_num = line_num + 1
 
                 if (line_num != 1):  # skip the first line
                     try:
+                        group_id = group_id + 1
                         obj_AgentId = None
                         obj_AgentUpId = None
+                        obj_ZhaohuoPid = None
+                        obj_AppPid = None
+
                         # get object
-                        obj_AgentId = Agent.objects.get(AgentId=line[0])
-                        obj_AgentUpId = Agent.objects.get(AgentId=line[5])
+                        if line[1] != '':
+                            obj_AgentId = Agent.objects.get(AgentId=line[1])
+
+                        if line[7] != '':
+                            obj_AgentUpId = Agent.objects.get(AgentId=line[7])
+
+                        if line[3] != '':
+                            obj_ZhaohuoPid = Agent.objects.get(AgentId=line[3])
+
+                        if line[5] != '':
+                            obj_AppPid = Agent.objects.get(AgentId=line[5])
+
                     except ObjectDoesNotExist:
                         ls_error.append(line[0])
 
-                    if not obj_AgentId == None:
-                        WorkList.append(AliConfig(AgentId=obj_AgentId,
-                                                  AgentUpId=obj_AgentUpId,
-                                                  AgentPerc=line[6],
-                                                  Agent2rdPerc=line[7],
-                                                  Agent3rdPerc=line[8],
-                                                  Slug=line[0]))
-                        ls_count_succ = ls_count_succ + 1
+                    WorkList.append(AliConfig(AgentId=obj_AgentId,
+                                              AgentUpId=obj_AgentUpId,
+                                              ZhaohuoPid=obj_ZhaohuoPid,
+                                              AppPid=obj_AppPid,
+                                              AgentPerc=line[8],
+                                              Agent2rdPerc=line[9],
+                                              Agent3rdPerc=line[10],
+                                              Slug=line[1],
+                                              GroupId=group_id))
+                    ls_count_succ = ls_count_succ + 1
         AliConfig.objects.bulk_create(WorkList)
 
         return HttpResponse('成功更新')

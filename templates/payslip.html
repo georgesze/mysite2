@@ -20,7 +20,8 @@
 		<tr>
 		<th colspan="2">代理</th>
 		<th colspan="2">代理上线</th>
-<!-- 		<th colspan="2">代理上上线</th> -->
+        <th>找货PID</th>
+        <th>APP PID</th>
 		<th>自获佣金比例</th>
 		<th>贡献上级佣金比例</th>
 		<th>贡献上上级佣金比例</th>		
@@ -32,21 +33,23 @@
 		<th>明细链接</th>
 		</tr>
         {% if form_agent %}				
-                {% for AliConfig in form_agent %}    
+                {% for PayResult in form_agent %}
 				<tr>	
-                <td align="right">{{ AliConfig.AgentId.AgentId }}</td>
-				<td align="right">{{ AliConfig.AgentId.AgentName }}</td>
-				<td align="right">{{ AliConfig.AgentUpId.AgentId }}</td>
-				<td align="right">{{ AliConfig.AgentUpId.AgentName }}</td>
-				<td align="right" width="100">{{ AliConfig.AgentPerc}}</td>
-				<td align="right" width="100">{{ AliConfig.Agent2rdPerc }}</td>
-				<td align="right" width="120">{{ AliConfig.Agent3rdPerc }}</td>
-				<td align="right">{{ AliConfig.IncomeSelf }}</td>	
-				<td align="right">{{ AliConfig.IncomeLv1 }}</td>
-				<td align="right">{{ AliConfig.IncomeLv2 }}</td>
-				<td align="right" input type="text" >{{ AliConfig.IncomeTotal }}</td>
-				<td align="right">{{ AliConfig.CalculateStatus }}</td>
-				<td align="right"><a href="/payslip/{{ AliConfig.Slug }}">点我查看明细</a></td>
+                <td align="right">{{ PayResult.AgentId }}</td>
+				<td align="right">{{ PayResult.AgentName }}</td>
+				<td align="right">{{ PayResult.AgentUpId }}</td>
+				<td align="right">{{ PayResult.AgentUpName }}</td>
+                <td align="right">{{ PayResult.ZhaohuoPid }}</td>
+                <td align="right">{{ PayResult.AppPid }}</td>
+				<td align="right" width="100">{{ PayResult.AgentPerc}}</td>
+				<td align="right" width="100">{{ PayResult.Agent2rdPerc }}</td>
+				<td align="right" width="120">{{ PayResult.Agent3rdPerc }}</td>
+				<td align="right">{{ PayResult.IncomeSelf }}</td>
+				<td align="right">{{ PayResult.IncomeLv1 }}</td>
+				<td align="right">{{ PayResult.IncomeLv2 }}</td>
+				<td align="right" input type="text" >{{ PayResult.IncomeTotal }}</td>
+				<td align="right">{{ PayResult.CalculateStatus }}</td>
+				<td align="right"><a href="/payslip/{{ PayResult.Slug }}">点我查看明细</a></td>
 					
 				</tr>			
                 {% endfor %}
