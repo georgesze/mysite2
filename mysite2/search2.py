@@ -122,7 +122,7 @@ def AgentList(request):
             Incometotal = aggregated['total']
 
     else:
-
+        
         #form = SearchForm({'period_str': datetime.date(2017, 10, 1), 'period_end': datetime.date(2017, 10, 31)})
         form = SearchForm({'period_str': get_date('last_month_start'), 'period_end': get_date('last_month_end')})
         if form.is_valid():

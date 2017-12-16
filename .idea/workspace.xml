@@ -21,8 +21,8 @@
       <file leaf-file-name="search2.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mysite2/search2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="233">
-              <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
+            <state relative-caret-position="158">
+              <caret line="124" column="8" lean-forward="false" selection-start-line="124" selection-start-column="8" selection-end-line="124" selection-end-column="8" />
               <folding>
                 <element signature="e#15#50#0" expanded="true" />
               </folding>
@@ -753,8 +753,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mysite2/search2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="233">
-          <caret line="127" column="0" lean-forward="false" selection-start-line="127" selection-start-column="0" selection-end-line="127" selection-end-column="0" />
+        <state relative-caret-position="158">
+          <caret line="124" column="8" lean-forward="false" selection-start-line="124" selection-start-column="8" selection-end-line="124" selection-end-column="8" />
           <folding>
             <element signature="e#15#50#0" expanded="true" />
           </folding>
