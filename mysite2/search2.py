@@ -122,7 +122,7 @@ def AgentList(request):
             Incometotal = aggregated['total']
 
     else:
-        
+
         #form = SearchForm({'period_str': datetime.date(2017, 10, 1), 'period_end': datetime.date(2017, 10, 31)})
         form = SearchForm({'period_str': get_date('last_month_start'), 'period_end': get_date('last_month_end')})
         if form.is_valid():
@@ -189,7 +189,10 @@ def AgentDetail(request, agent_name_slug):
 
     try:
         current_agent = AliConfig.objects.get(Slug=agent_name_slug)
-        context_dict['agent_name'] = current_agent.AgentId.AgentName + current_agent.AgentId.AgentId
+        if current_agent.AgentId is not None:
+            context_dict['agent_name'] = current_agent.AgentId.AgentName + current_agent.AgentId
+        else:
+            context_dict['agent_name'] = '临时代理'
 
         start = request.session.get('start')
         end = request.session.get('end')
@@ -199,22 +202,30 @@ def AgentDetail(request, agent_name_slug):
 
         # 1.当前代理佣金明细
         # settle date 订单结算时间
-        agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId, SettleDate__range=(start, end))
-        # agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId.AgentId,CreatDate__contains=datetime.date(2017,5,15))   CreatDate__contains=end
-        # agent_orders = AliOrd.objects.all()
+        if current_agent.AgentId is not None:
+            agent_orders = AliOrd.objects.filter(PosID=current_agent.AgentId, SettleDate__range=(start, end))
+            context_dict['agent_orders'] = agent_orders
 
-        context_dict['agent_orders'] = agent_orders
+        if current_agent.ZhaohuoPid is not None:
+            agent_orders = AliOrd.objects.filter(PosID=current_agent.ZhaohuoPid, SettleDate__range=(start, end))
+            context_dict['agent_orders_zh'] = agent_orders
+
+        if current_agent.AppPid is not None:
+            agent_orders = AliOrd.objects.filter(PosID=current_agent.AppPid, SettleDate__range=(start, end))
+            context_dict['agent_orders_app'] = agent_orders
+
         context_dict['current_agent'] = current_agent
 
         # 2.所有下线佣金明细
-        agent_orders_2 = AliOrd.objects.filter(UplineId=current_agent.AgentId.AgentId,
-                                               SettleDate__range=(start, end)).order_by('PosID')
-        context_dict['agent_orders_2'] = agent_orders_2
+        if current_agent.AgentId is not None:
+            agent_orders_2 = AliOrd.objects.filter(UplineId=current_agent.AgentId,
+                                                   SettleDate__range=(start, end)).order_by('PosID')
+            context_dict['agent_orders_2'] = agent_orders_2
 
         # 3.所有下下线佣金明细
-        agent_orders_3 = AliOrd.objects.filter(Up2lineId=current_agent.AgentId.AgentId,
+            agent_orders_3 = AliOrd.objects.filter(Up2lineId=current_agent.AgentId,
                                                SettleDate__range=(start, end)).order_by('PosID')
-        context_dict['agent_orders_3'] = agent_orders_3
+            context_dict['agent_orders_3'] = agent_orders_3
 
     except AliConfig.DoesNotExist:
         # We get here if we didn't find the specified order.
@@ -227,14 +238,26 @@ def AgentDetail(request, agent_name_slug):
         # style1 = xlwt.easyxf(num_format_str='#')
 
         wb = xlwt.Workbook()
-        ws = wb.add_sheet('当前代理佣金明细' + context_dict['agent_name'])
-        excel_add_sheet(ws, context_dict['agent_orders'])
 
-        ws = wb.add_sheet('所有一级下线订单')
-        excel_add_sheet(ws, context_dict['agent_orders_2'])
+        if 'agent_orders' in context_dict:
+            ws = wb.add_sheet('当前代理机器人佣金' + context_dict['agent_name'])
+            excel_add_sheet(ws, context_dict['agent_orders'])
 
-        ws = wb.add_sheet('所有二级下线订单')
-        excel_add_sheet(ws, context_dict['agent_orders_3'])
+        if 'agent_orders_app' in context_dict:
+            ws = wb.add_sheet('当前代理app佣金' + context_dict['agent_name'])
+            excel_add_sheet(ws, context_dict['agent_orders_app'])
+
+        if 'agent_orders_zh' in context_dict:
+            ws = wb.add_sheet('当前代理找货佣金' + context_dict['agent_name'])
+            excel_add_sheet(ws, context_dict['agent_orders_zh'])
+
+        if 'agent_orders_2' in context_dict:
+            ws = wb.add_sheet('所有一级下线订单')
+            excel_add_sheet(ws, context_dict['agent_orders_2'])
+
+        if 'agent_orders_3' in context_dict:
+            ws = wb.add_sheet('所有二级下线订单')
+            excel_add_sheet(ws, context_dict['agent_orders_3'])
 
         response = HttpResponse(content_type='application/msexcel')
         response['Content-Disposition'] = 'attachment; filename=example.xls'

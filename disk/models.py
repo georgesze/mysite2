@@ -94,8 +94,15 @@ class AliConfig(models.Model):
     Slug = models.SlugField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        self.Slug = slugify(self.AgentId)
-        super(AliConfig, self).save(*args, **kwargs)
+        if self.AgentId is not None:
+            self.Slug = slugify(self.AgentId)
+            super(AliConfig, self).save(*args, **kwargs)
+        elif self.ZhaohuoPid is not None:
+            self.Slug = slugify(self.ZhaohuoPid)
+            super(AliConfig, self).save(*args, **kwargs)
+        elif self.AppPid is not None:
+            self.Slug = slugify(self.AppPid)
+            super(AliConfig, self).save(*args, **kwargs)
 
     def __str__(self):
         if self.AgentId is None:
