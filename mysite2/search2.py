@@ -190,7 +190,7 @@ def AgentDetail(request, agent_name_slug):
     try:
         current_agent = AliConfig.objects.get(Slug=agent_name_slug)
         if current_agent.AgentId is not None:
-            context_dict['agent_name'] = current_agent.AgentId.AgentName + current_agent.AgentId
+            context_dict['agent_name'] = current_agent.AgentId.AgentName + current_agent.AgentId.AgentId
         else:
             context_dict['agent_name'] = '临时代理'
 
