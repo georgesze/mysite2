@@ -24,8 +24,10 @@
         <th>APP PID</th>
 		<th>自获佣金比例</th>
 		<th>贡献上级佣金比例</th>
-		<th>贡献上上级佣金比例</th>		
-		<th>自获佣金</th>
+		<th>贡献上上级佣金比例</th>
+        <th>机器人佣金</th>
+        <th>找货佣金</th>
+        <th>APP佣金</th>
 		<th>一级下线贡献佣金</th>
 		<th>二级下线贡献佣金</th>
 		<th>总佣金</th>
@@ -44,7 +46,9 @@
 				<td align="right" width="100">{{ PayResult.AgentPerc}}</td>
 				<td align="right" width="100">{{ PayResult.Agent2rdPerc }}</td>
 				<td align="right" width="120">{{ PayResult.Agent3rdPerc }}</td>
-				<td align="right">{{ PayResult.IncomeSelf }}</td>
+                <td align="right">{{ PayResult.IncomeAgent }}</td>
+                <td align="right">{{ PayResult.IncomeZhaohuo }}</td>
+                <td align="right">{{ PayResult.IncomeApp }}</td>
 				<td align="right">{{ PayResult.IncomeLv1 }}</td>
 				<td align="right">{{ PayResult.IncomeLv2 }}</td>
 				<td align="right" input type="text" >{{ PayResult.IncomeTotal }}</td>

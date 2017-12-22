@@ -368,6 +368,10 @@ def CalculateIncome(agent, start, end):
     else:
         income_app = aggregated1['Income'] * agent.AgentPerc
 
+    agent.IncomeAgent = income_agent
+    agent.IncomeZhaohuo = income_zhaohuo
+    agent.IncomeApp = income_app
+
     agent.IncomeSelf = income_agent + income_zhaohuo + income_app
 
     ##################下线佣金计算#################################
@@ -411,6 +415,9 @@ def save_pay_result(agent, start, end):
                     'AppPid':         str(agent.AppPid) if agent.AppPid else "",
                     'AppName':        agent.AppPid.AgentName if agent.AppPid else "",
                     'GroupId':        agent.GroupId,
+                    'IncomeAgent':    agent.IncomeAgent,
+                    'IncomeZhaohuo':  agent.IncomeZhaohuo,
+                    'IncomeApp':      agent.IncomeApp,
                     'IncomeSelf':     agent.IncomeSelf,
                     'IncomeLv1':      agent.IncomeLv1,
                     'IncomeLv2':      agent.IncomeLv2,
